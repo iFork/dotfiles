@@ -1,0 +1,776 @@
+" Hints: start fold markers (fmr) used. Voom may outline this.
+
+"
+" Important vars {{{1
+let $VIMHOME = $HOME."/.vim"
+let $MY_VIM_SCRIPTS = $VIMHOME."/my_scripts"	
+
+"########################################
+" Dependancy Setup Automation {{{1
+"########################################
+
+" ----------------------------------------
+" Automatic installation of vim-plug, if it's missing {{{2
+" ----------------------------------------
+if empty(glob('~/.vim/autoload/plug.vim'))
+  silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
+        \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+  autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
+endif
+"Note that --sync flag is used to block the execution until the installer finishes.
+"NOTE: env dependency: curl (apt install curl)
+
+
+"########################################
+" Plugin Management : vim-plug {{{1
+"########################################
+"-----------------------------------------
+" vim-plug: Automatically install missing plugins on startup {{{2
+"-----------------------------------------
+autocmd VimEnter *
+      \  if len(filter(values(g:plugs), '!isdirectory(v:val.dir)'))
+      \|   PlugInstall --sync | q
+      \| endif
+"-----------------------------------------
+
+" Cheatlist: vim-plug commands: 
+" :PlugInstall, :PlugUpdate, 
+" :PlugClean to remove undeclared plugins
+" On-demand loading of plugins
+" 	'on' command(s) invokation or/and for file type(s)
+" e.g. 
+" 	Plug 'scrooloose/nerdtree', { 'on': 'NERDTreeToggle' }
+" 	Plug 'junegunn/vim-github-dashboard', { 'on': ['GHDashboard', 'GHActivity'] }
+"	" Code to execute when the plugin is lazily loaded on demand
+" 	Plug 'junegunn/vader.vim',  { 'on': 'Vader', 'for': 'vader' }
+"	autocmd! User vader.vim echom 'Vader is now loaded!'
+
+"-----------------------------------------
+" Plugins setup functions {{{2
+"-----------------------------------------
+" Example: vim function
+"function! BuildYCM(info)
+"  " info is a dictionary with 3 fields
+"  " - name:   name of the plugin
+"  " - status: 'installed', 'updated', or 'unchanged'
+"  " - force:  set on PlugInstall! or PlugUpdate!
+"  if a:info.status == 'installed' || a:info.force
+"    !./install.py
+"  endif
+"endfunction
+function! Coc_plugin_setup()
+	" check system dependencies
+	echom 'Calling Coc_plugin_setup'
+	echom $MY_VIM_SCRIPTS."/coc_plugin_setup.sh"
+	!$MY_VIM_SCRIPTS/coc_plugin_setup.sh
+	"TODO: call/pass to this func does not happen
+endfunction
+"-----------------------------------------
+" Plugins {{{2
+"-----------------------------------------
+" Specify a directory for plugins
+" - For Neovim: stdpath('data') . '/plugged'
+" - Avoid using standard Vim directory names like 'plugin'
+silent! if plug#begin('~/.vim/plugged')
+" Declare the list of plugins.
+"Plug 'w0rp/ale'                 " linting plugin
+"--Themes {{{3
+Plug 'morhetz/gruvbox'          " vim gruvbox color scheme
+Plug 'sainnhe/gruvbox-material' "modified gruvbox
+Plug 'altercation/vim-colors-solarized'  "theme solarazed
+	"colors are off on gnome terminal with proper palette
+	"in Konsol is acceptable only with same-name palette
+Plug 'dracula/vim', { 'as': 'dracula' }
+Plug 'arcticicestudio/nord-vim'
+Plug 'rakr/vim-one'
+Plug 'kyoz/purify', { 'rtp': 'vim' }
+Plug 'blueshirts/darcula' "InteliJ
+
+"-- General {{{3
+Plug 'vim-airline/vim-airline' 	 " statusline
+Plug 'tpope/vim-fugitive' "git wrapper
+Plug 'tpope/vim-eunuch' "Helpers for UNIX / Linux commands wrapper
+Plug 'tpope/vim-repeat' "Enable repeating supported plugin maps with '.'
+		" e.g. for easymotion
+Plug 'easymotion/vim-easymotion' "Vim motions on speed
+	" Cheatlist:
+	" <leader><leader>w ; .. f<char> ; .. s<char>
+	"
+"-- Tabs, Windows and Buffers {{{3
+Plug 'dhruvasagar/vim-zoom'  " Toggle zoom in / out individual windows
+	"Review: This is latest chronologically.
+	"Alternatives are 
+	"regedarek/ZoomWin -- 2014
+	"szw/vim-maximizer -- 2015
+	"
+	"Usage: 
+	"Cheatlist: <C-W>m to toggle zoom
+	"Statusline API:
+	" . g:zoom#statustext defaults to value 'status'. 
+	" You may add this to your statusline like this :
+	" set statusline+=%{zoom#statusline()}
+	" Note: not cooperative with NERDTree
+
+"--Project drawer / file management {{{3
+Plug 'preservim/nerdtree' "file system explorer
+	"Issue: when mksession is run when some of NERDTree panes are
+	"open - then loading such session fails.
+	"Use either vim-session plugin 
+	"or use vimpanel plugin instead of NERDTree 
+	"or put workaround functions from 
+	" https://stackoverflow.com/questions/4226905/vim-nerdtree-not-recovered-in-session-restore/42462073#42462073
+	"
+Plug 'xolox/vim-session'  " Extended session management for Vim
+	"Required: If you want NERDTree to not conflict with vim's 
+	"session loading (after mksession).
+	"Vim’s :mksession command isn’t really compatible with plug-ins that 
+	"create buffers with generated content and because of this session.vim
+	"includes specific workarounds for such plug-ins: 
+	"•BufExplorer, Project and NERD tree windows are supported;
+	"Cheatlist: h: session
+	":SaveSession 
+	":OpenSession 
+	":OpenTabSession, :SaveTabSession, :AppendTabSession
+Plug 'xolox/vim-misc' " scripts that are used by xolox's plug-ins 
+		      "RequiredBy: xolox/vim-session 
+Plug 'Xuyuanp/nerdtree-git-plugin' "for NERDTree to show git status flags
+	"TODO: make on-demand loading {'on': 'Git'} "on fugitive commands
+	"and echom - message to notify loading
+Plug 'low-ghost/nerdtree-fugitive'  "adds some fugitive functionality 
+	"directly to nerdtree for vim
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } } "fuzzy finder, main plugin
+						"required by fzf.vim
+Plug 'junegunn/fzf.vim'
+
+"--Language semantics {{{3
+Plug 'majutsushi/tagbar' "sidebar that displays the ctags-generated 
+			"tags of the current file, ordered by their scop
+			"Dependency: ctags. recommended is universal-ctags.
+			" https://github.com/universal-ctags/ctags/blob/master/docs/autotools.rst 
+"Intellisense engine like VSCode, Language Server Protocol - Client
+Plug 'neoclide/coc.nvim', {'do': function('Coc_plugin_setup'), 'branch': 'release' } 
+"Plug 'neoclide/coc.nvim', {'do': function('Coc_plugin_setup'), 'branch': 'release' } 
+
+Plug 'jackguo380/vim-lsp-cxx-highlight' "C/C++/ObjC semantic highlighting 
+					"using the language server protocol.
+	"https://github.com/jackguo380/vim-lsp-cxx-highlight/blob/master/README.md 
+	"TODO: configure / make it work after fixing clangd
+	"Note: For vim +timers and +byte_offset are recommended but not required.
+	"for clangd language server Requires coc.nvim and coc-clangd
+	"For clangd coc-settings.json must have:
+	"{
+	"    "clangd.semanticHighlighting": "true"
+	"}
+
+"--Text work {{{3
+Plug 'godlygeek/tabular' "text filtering and alignment
+			"RequiredBy: 'vim-markdown'
+			"Alternatives: plugin not mentioned by 'vim-markdown' 
+			"is 'vim-easy-align'
+			"Cheatlist: :Tabular/pattern
+Plug 'junegunn/vim-easy-align' " text alignment
+	"Alternatives: easier than tabular (installed too)
+	"Cheatlist: after mapping 'ga' use: 
+	"vipga<option><char> ; gaip<option><char>
+	"optrion: <number>'th occurance
+	" 	  * : all occurances
+	" 	  ** : left/right alternating
+	" 	  -, -2 : last, 2'nd from last
+	" 	  <Enter>  : switch l/r/c alignments
+	" 	  e.g.: gaip<CR><CR>2<Space>
+	" <C-X> for regex in interactive mode 
+	" <CTRL-P>. (P for Preview)
+	" Note:
+	" vim-easy-align ignores comments, while Tabular plugin works with comments as 
+	" usual. :Tabularize /\/\/
+	" link: https://github.com/junegunn/vim-easy-align/blob/master/EXAMPLES.md
+	"Ignoring delimiters in comments or strings
+		"  Delimiters highlighted as comments or strings are ignored by default
+	"Aligning in-line comments
+		"try -<space> as space before at end-of-the-line comment is considered 
+		"as a last space as everithing inside comment is ignored 
+		"OR
+		"" Using regular expression /#/ (or //// for c comments)
+		" " - "ig" is a shorthand notation of "ignore_groups"
+		" :EasyAlign/#/{'ig':['String']}
+		" " Or more concisely with the shorthand notation;
+		" :EasyAlign/#/ig['String']
+		
+Plug 'plasticboy/vim-markdown' "Syntax highlighting, matching rules and mappings for 
+			"the original Markdown and extensions.
+			"Requires 'tabular' plugin to come before vim-markdown.
+Plug 'vim-voom/VOoM' " Vim Outliner of Markups  emulates a two-pane text outliner
+	"originaly .. start fold markers (fmr) with level numbers, that is {{{num,
+	"or fmr1, fmr2 ..
+	"Cheatlist: create outline by :Voom [MarkupMode]
+	"MarkupMode can be: fmr - default, markdown, 
+		"Paragraphs (:Voom paragraph{Blank|Indent|NoIndent}). Blocks of lines. 
+		"Handy for sorting paragraphs with **:VoomSort**.
+	"main Ex commands: Voom, Voomhelp, Voomexec, Voomlog.
+	"for help: Voomhelp , :h voom-quickstart
+	
+"Plug 'tpope/vim-commentary' "comment stuff out
+	"Cheatlist: gc<motion/object>, gcc<number> - line, gcgc - adjacent lines 
+	"ex command for toggling: Commentary
+Plug 'preservim/nerdcommenter' "comment stuff out 
+				"see configs below
+	"Review: Comparing to tpope's vim-commentary - tpope's supports text objects
+	"natively, this nerd plugin needs a workaround like `vip`command
+	"However this nerd ones has more styles and supports within line
+	"partial commenting 
+Plug 'tpope/vim-abolish' " search for, substitute, and abbreviate multiple variants of a word
+			" variants may be uppercase / lower-case 
+	"Cheatlist:
+	"--Substitution
+	" preserves original uppercase / lower-case styling in a word
+	":S[ubvert]/child{,ren}/adult{,s}/g
+	"--Coercion
+	"convert between naming styles 
+	" crs (coerce to snake_case). camelCase (crc), 
+	" UPPER_CASE (cru), dash-case (cr-), 
+	" space case (cr<space>), and Title Case (crt), etc.
+	"--Abbreviation 
+	"for common spelling error corrections 
+	"following one command produces 48 abbreviations including all of the above.
+	":Abolish {despa,sepe}rat{e,es,ed,ing,ely,ion,ions,or}  {despe,sepa}rat{}
+
+" --Meta Helpers {{{3
+Plug 'liuchengxu/vim-which-key' " shows keybindings in popup
+" Key guide is an additional layer. It will only activate, when you do not 
+" complete your input during the timeoutlen duration.
+" Cheatlist: :WhichKey and :WhichKeyVisual 
+" " By default timeoutlen is 1000 ms
+" set timeoutlen=500
+" TODO: To configure - The dictionary configuration is necessary to provide group names or a description text.
+
+
+
+" (..initialize plugin system, endif) {{{3
+call plug#end()
+endif
+" vim-plug does not require any extra statement other than plug#begin()
+" and plug#end(). You can remove filetype off, filetype plugin indent on
+" and syntax on from your .vimrc as they are automatically handled by
+" plug#begin() and plug#end()
+
+"########################################
+" Presentation / Visualization {{{1
+"########################################
+"set number  "show row number
+set number relativenumber " Display relative numbers
+set cursorline " Enable highlighting of the current line
+set showcmd "show pending sequence of vim commands
+set cmdheight=2 " Give more space for displaying messages.
+	" Recommended: by coc-plugin: 
+	"
+" Clear highlighting on escape in normal mode
+nnoremap <esc> :noh<return><esc>
+nnoremap <esc>^[ <esc>^[
+
+" Searching
+set hlsearch
+set ignorecase " case insensitive searching
+set smartcase " case-sensitive if expresson contains a capital letter
+set incsearch " set incremental search, like modern browsers
+set nolazyredraw " don't redraw while executing macros
+
+"-----------------------------------------
+" Sign column / gutter {{{2
+"-----------------------------------------
+" Recommended: by coc-plugin: 
+" Always show the signcolumn, otherwise it would shift the text each time
+" diagnostics appear/become resolved.
+
+autocmd BufRead,BufNewFile * setlocal signcolumn=yes
+"set signcolumn=yes "left-hand margin before line numbers
+
+"Certain filetypes that are not supposed to have the column:
+autocmd FileType tagbar,nerdtree setlocal signcolumn=no
+
+"-----------------------------------------
+" Syntax Highlighting {{{2
+"-----------------------------------------
+"syntax on "or enable.
+if !exists("g:syntax_on")
+    syntax enable
+endif
+"The ":syntax enable" command will keep your current color settings.  This
+"allows using ":highlight" commands to set your preferred colors before or
+"after using this command.  If you want Vim to overrule your settings with the
+"defaults, use: >
+"    :syntax on
+set showmatch " show matching braces
+
+"-----------------------------------------
+"	Python Syntax {{{3
+"-----------------------------------------
+" enable all Python syntax highlighting features
+" it doesn't highlight issues on other files even 
+" though it's not in autocmd. Don't know
+let python_highlight_all = 1 
+
+"-----------------------------------------
+" Filetypes / Compound w/ subtypes {{{2
+"-----------------------------------------
+filetype plugin on " Filetype detection
+"Filetype detection, set subtypes
+"set subtype to doxygen to enable doxygen highlighting.
+augroup project
+  autocmd!
+  autocmd BufRead,BufNewFile *.h,*.c set filetype=c.doxygen
+  autocmd BufNewFile,BufReadPost *.hpp,*.cpp set filetype=cpp.doxygen "my addition
+augroup END
+
+"-----------------------------------------
+" Non-printable / Invisible Chracters {{{2
+"-----------------------------------------
+"list command config to display non-printable chracters
+":set list 
+set listchars=tab:␉·	"that's Unicode character U+2409 SYMBOL FOR HORIZONTAL TABULATION 
+			"followed by U+00B7 MIDDLE DOT
+set listchars+=eol:⏎
+set listchars+=trail:␠
+set listchars+=nbsp:⎵ " for non-breaking space
+set listchars+=space:␣ " for space
+
+"-----------------------------------------
+" Code folding settings {{{2
+"-----------------------------------------
+set foldmethod=syntax " fold based on indent
+set foldnestmax=10 " deepest fold is 10 levels
+set nofoldenable " don't fold by default
+set foldlevel=1
+
+"########################################
+" Plugin Configs {{{1
+"########################################
+"-----------------------------------------
+" Theme {{{2
+"-----------------------------------------
+
+"True color support
+
+"set termguicolors "support true color terminal
+	"NOTE: turn off if using simple terminal themes
+	"as suggested by gruvbox
+
+"Credit joshdick, vim-one theme
+"Use 24-bit (true-color) mode in Vim/Neovim when outside tmux.
+"If you're using tmux version 2.2 or later, you can remove the outermost $TMUX check and use tmux's 24-bit color support
+"(see < http://sunaku.github.io/tmux-24bit-color.html#usage > for more information.)
+if (empty($TMUX))
+  if (has("nvim"))
+  "For Neovim 0.1.3 and 0.1.4 < https://github.com/neovim/neovim/pull/2198 >
+  let $NVIM_TUI_ENABLE_TRUE_COLOR=1
+  endif
+  "For Neovim > 0.1.5 and Vim > patch 7.4.1799 < https://github.com/vim/vim/commit/61be73bb0f965a895bfb064ea3e55476ac175162 >
+  "Based on Vim patch 7.4.1770 (`guicolors` option) < https://github.com/vim/vim/commit/8a633e3427b47286869aa4b96f2bfc1fe65b25cd >
+  " < https://github.com/neovim/neovim/wiki/Following-HEAD#20160511 >
+  if (has("termguicolors"))
+    set termguicolors
+  endif
+endif
+
+"-----------------------------------------
+set background=dark "or light
+"set background=light "or light
+
+"-----------------------------------------
+" solarized Theme {{{3
+"colorscheme solarized
+	"setting your terminal emulator's colorscheme to used the 
+	"Solarized palette. Can download palettes for popular terminals
+"-----------------------------------------
+" gruvbox Theme {{{3
+let g:gruvbox_italic=1
+	"Most terminals don't handle italics right 
+	"but in urxvt or gnome-terminal may try
+	"TODO: NOTE: check terminal handling of italics
+let g:gruvbox_contrast_dark='soft'
+let g:gruvbox_contrast_light='medium'
+	"soft medium hard
+"colorscheme gruvbox
+
+"-----------------------------------------
+" gruvbox-material Theme {{{3
+" See :help gruvbox-material-configuration for more
+
+" set contrast
+" this configuration option should be placed before `colorscheme gruvbox-material`
+" available values: 'hard', 'medium'(default), 'soft'
+let g:gruvbox_material_background = 'soft'
+let g:airline_theme = 'gruvbox_material'
+
+colorscheme gruvbox-material
+
+
+"-----------------------------------------
+" dracula Theme {{{3
+"let g:airline_theme='dracula'
+"colorscheme dracula
+"-----------------------------------------
+" nord Theme {{{3
+"colorscheme nord
+"-----------------------------------------
+" one Theme {{{3
+"let g:airline_theme='one' "airline integration
+let g:one_allow_italics = 1
+"colorscheme one
+"-----------------------------------------
+" purify Theme {{{3
+"let g:airline_theme='purify'
+"colorscheme purify
+"-----------------------------------------
+" darcula Theme {{{3 
+"colorscheme darcula
+
+"-----------------------------------------
+" airline / Airlin {{{2 
+"-----------------------------------------
+" To apply  airline color scheme without reloading:
+" e.g. :AirlineTheme gruvbox_material
+let g:airline_powerline_fonts = 1
+let g:airline_section_x = '' "hide filetype  (vim)
+"let g:airline_section_y = '' "hide file encoding[fileformat] (utf-8[unix])
+
+"coc integration
+let g:airline_section_error = '%{airline#util#wrap(airline#extensions#coc#get_error(),0)}'
+let g:airline_section_warning = '%{airline#util#wrap(airline#extensions#coc#get_warning(),0)}'
+
+"vim-zoom integration
+" let g:airline_section_y = airline#section#create(['ffenc', " ", '%{zoom#statusline()}'])
+" let g:airline_section_y = airline#section#create_right(['ffenc','%{zoom#statusline()}'])
+let g:airline_section_z = airline#section#create_right(["%p%% : %l/%L \ue0a1 %c", '%{zoom#statusline()}'])
+	"double quotes ("\u..") needed for unicode char code to be rendered as such 
+
+
+" let g:airline_section_z = airline#section#create(['%{zoom#statusline()}'])
+
+"Tip: read :h airline-advanced-customization
+	"'ffenc' is file format, encoding part. See airline-predefined-parts 
+
+" Smart tab line
+"
+" Automatically displays all buffers when there's only one tab open.
+"let g:airline#extensions#tabline#enabled = 1
+" Cutomizing tab separators for the tabline
+" defining "straight" tabs:
+"let g:airline#extensions#tabline#left_sep = ' '
+"let g:airline#extensions#tabline#left_alt_sep = '|'
+" Path formatter - how file paths are displayed in each individual tab
+" as well as the current buffer indicator
+"let g:airline#extensions#tabline#formatter = 'unique_tail_improved' 
+	"default jsformatter unique_tail unique_tail_improved
+
+"-----------------------------------------
+" vim-markdown {{{2
+"-----------------------------------------
+"Syntax highlighting, matching rules and mappings for markdown
+
+set conceallevel=2 "enable conceal, Vim's standard conceal configuration.
+let g:vim_markdown_toc_autofit = 1 "TOC window auto-fit when it's possible for it to shrink
+
+"-----------------------------------------
+" vim-easymotion {{{2
+"-----------------------------------------
+
+" Use uppercase target labels and type as a lower case
+let g:EasyMotion_use_upper = 1
+ " type `l` and match `l`&`L`
+let g:EasyMotion_smartcase = 1
+" Smartsign (type `3` and match `3`&`#`)
+let g:EasyMotion_use_smartsign_us = 1
+
+"-----------------------------------------
+" NERDTree / nerdtree {{{2
+"-----------------------------------------
+" NERDTree cheatlist:
+" :NERDTreeToggle 
+
+" open a NERDTree automatically when vim starts up if 
+" no files and session (via -S) were specified
+autocmd StdinReadPre * let s:std_in=1
+autocmd VimEnter * if argc() == 0 && !exists("s:std_in") 
+		\ && v:this_session == "" | NERDTree | endif
+"open NERDTree automatically when vim starts up on opening a directory
+autocmd VimEnter * if argc() == 1 && isdirectory(argv()[0]) 
+		\ && !exists("s:std_in") | exe 'NERDTree' argv()[0] 
+		\ | wincmd p | ene | exe 'cd '.argv()[0] | endif
+"close vim if the only window left open is a NERDTree
+autocmd BufEnter * if (winnr("$") == 1 && exists("b:NERDTree") 
+			\ && b:NERDTree.isTabTree()) | q | endif
+"ignore / hide files
+" let g:NERDTreeIgnore = []
+"  ["^.git$", "^node_modules$","^__pycache__$", "^venv$", "^.vscode$"]
+"let g:NERDTreeShowHidden=1
+
+"-----------------------------------------
+" NERDTree-git-plugin / nerdtree-git-plugin {{{2
+"-----------------------------------------
+"NOTE: Dependancy:  vim couldn't execute system function in fish. Add set shell=sh in your vimrc.
+
+"variable to change flag symbols
+let g:NERDTreeIndicatorMapCustom = {
+    \ "Modified"  : "✹",
+    \ "Staged"    : "✚",
+    \ "Untracked" : "✭",
+    \ "Renamed"   : "➜",
+    \ "Unmerged"  : "═",
+    \ "Deleted"   : "✖",
+    \ "Dirty"     : "✗",
+    \ "Clean"     : "✔︎",
+    \ 'Ignored'   : '☒',
+    \ "Unknown"   : "?"
+    \ }
+"show ignored status
+"let g:NERDTreeShowIgnoredStatus = 1 "a heavy feature may cost much more time
+
+
+"-----------------------------------------
+" nerdcommenter  {{{2
+"-----------------------------------------
+"Cheatlist: if <leader> == \
+" \\cc ;  \\cm -- minimal comments ; \\cs -- sexy
+" \\ca -- toggle to alternative delimiters
+" \\c<space> -- toggle, topmost line decides \\ci -- invert line by line ; \\cu --uncomment  
+" \\c$ ; cA -- append comment 
+"
+"
+" Add spaces after comment delimiters by default
+let g:NERDSpaceDelims = 1
+
+" Use compact syntax for prettified multi-line comments
+let g:NERDCompactSexyComs = 1
+
+" Align line-wise comment delimiters flush left instead of following code indentation
+"let g:NERDDefaultAlign = 'left'
+
+" Set a language to use its alternate delimiters by default
+"let g:NERDAltDelims_java = 1
+
+" Add your own custom formats or override the defaults
+"let g:NERDCustomDelimiters = { 'c': { 'left': '/**','right': '*/' } }
+
+" Allow commenting and inverting empty lines (useful when commenting a region)
+let g:NERDCommentEmptyLines = 1
+
+" Enable trimming of trailing whitespace when uncommenting
+let g:NERDTrimTrailingWhitespace = 1
+
+" Enable NERDCommenterToggle to check all selected lines is commented or not 
+"let g:NERDToggleCheckAllLines = 1
+
+"-----------------------------------------
+" coc configs  {{{2
+"-----------------------------------------
+	"See: keybindings.vim
+
+" Having longer updatetime (default is 4000 ms = 4 s) leads to noticeable
+" delays and poor user experience.
+set updatetime=300
+
+" Don't pass messages to |ins-completion-menu|.
+set shortmess+=c
+
+
+" Highlight the symbol and its references when holding the cursor.
+autocmd CursorHold * silent call CocActionAsync('highlight')
+
+" Add `:Format` command to format current buffer.
+command! -nargs=0 Format :call CocAction('format')
+
+" Add `:Fold` command to fold current buffer.
+command! -nargs=? Fold :call     CocAction('fold', <f-args>)
+
+" Add `:OR` command for organize imports of the current buffer.
+command! -nargs=0 OR   :call     CocAction('runCommand', 'editor.action.organizeImport')
+
+" Add (Neo)Vim's native statusline support.
+" NOTE: Please see `:h coc-status` for integrations with external plugins that
+" provide custom statusline: lightline.vim, vim-airline.
+set statusline^=%{coc#status()}%{get(b:,'coc_current_function','')}
+
+
+"-----------------------------------------
+"	 coc extensions configs  {{{2
+"-----------------------------------------
+"Coc.nvim will try to load javascript files in the folder $VIMCONFIG/coc-extensions
+"let $VIMCONFIG = $VIMHOME "HAD NO effect, it still went int o.config/coc/extensions
+
+"make coc automatically install these extensions
+let g:coc_global_extensions = ['coc-json'
+				\, 'coc-clangd' 
+				\, 'coc-lists' 
+				\ ]
+
+" Note: To install extensions with shell script, use command like:
+" install coc-json & coc-html and exit
+"vim -c 'CocInstall -sync coc-json coc-html|q'
+"-----------------------------------------
+
+
+"########################################
+" General {{{1
+"########################################
+"Global settings to allow project specific settings
+set exrc "source .vimrc file if  present, 
+	"from working directory, a place to store 
+	"project-specific configuration.
+set secure "restrict usage of some commands in non-default .vimrc files; 
+	"commands that write to file or execute shell commands 
+	"are not allowed and map commands are displayed.
+
+set mouse=a "interact with the tabs by clicking on them. also a + button 
+set history=10000
+
+" Mappings
+source $VIMHOME/keybindings.vim
+
+"########################################
+" Project Environment {{{1
+"########################################
+" Setting path variable
+" for command gf (and related, <C-W><C-F> to open in new tab). 
+" set Vim’s path option to contain a comma-separated 
+" list of directories to look for the file.
+
+"let &path.="src/include,/usr/include/AL,"	
+
+"########################################
+" Tabs, Windows and Buffers {{{1
+"########################################
+set splitbelow splitright "when new files are open in split, 
+			"they are opened on bottom and/or right
+
+set switchbuf=useopen "make :make, :vimgrep and similar commands use
+			"already displayed/open buffer
+"set switchbuf=usetab,newtab "switching to the existing tab 
+			"if the buffer is open, or creating a new one if not.
+
+set hidden "opening a new file when the current buffer has unsaved 
+	" changes causes files to be hidden instead of closed
+	" But be carefull as you can close terminal with hidden unsaved changes
+	" Recommended: by coc-plugin: " TextEdit might fail if hidden is not set.
+
+
+"set autoread "is a must if you use git to change files in the background.
+
+
+" Recommended: by coc-plugin: 
+" Some servers have issues with backup files, see #649.
+set nobackup
+set nowritebackup
+
+
+"########################################
+" Style and Formatting Rules {{{1
+"########################################
+"-----------------------------------------
+" Line length {{{2
+"-----------------------------------------
+"highlight column number X 
+set colorcolumn=80
+highlight ColorColumn ctermbg=darkgray	
+"OR
+"if exists('&colorcolumn')
+"	set colorcolumn=80
+"endif
+"-----------------------------------------
+" Tabulations / Indention Rules {{{2
+"-----------------------------------------
+set smartindent
+
+set shiftround " round indent to a multiple of 'shiftwidth'
+
+"TODO: set noexpandtab " TABS!!! -- for makefile 
+set smarttab " Enabling this will make the tab key (in insert mode) insert spaces
+		" or tabs to go to the next indent of the next tabstop when the
+		" cursor is at the beginning of a line (i.e. the only preceding 
+		"characters are whitespace).
+
+
+"" set tabstop=4       " The width of a TAB is set to 4.
+""                     " Still it is a \t. It is just that
+""                     " Vim will interpret it to be having
+""                     " a width of 4.
+""   set shiftwidth=4  " Indents will have a width of 4
+""   set softtabstop=4 " Sets the number of columns for a TAB
+""   set expandtab     " Expand TABs to spaces
+
+"-----------------------------------------
+" 	Cpp specific tab / indention {{{3 
+"-----------------------------------------
+autocmd Filetype    cpp 
+                \   set tabstop=4     |
+                \   set shiftwidth=4  |
+                \   set softtabstop=4 |
+                \   set expandtab      
+
+"-----------------------------------------
+" 	Python specific tab / indention  {{{3
+"-----------------------------------------
+autocmd Filetype    python 
+                \   set tabstop=4     |
+                \   set shiftwidth=4  |
+                \   set softtabstop=4 |
+                \   set expandtab      
+
+
+"-----------------------------------------
+" Comment Formatting {{{2
+"-----------------------------------------
+set comments=sl:/**,mb:*,elx:*/ "comment format, start line, middle block, endline, 
+				"elx : command should end with */ and that it 
+				"should automatically complete the comment when you hit just /
+set formatoptions+=r  "auto-insert comment leader character
+
+
+"########################################
+" Language Specific Configs {{{1
+"########################################
+
+
+
+"########################################
+" Low level config / teminal specific {{{1
+"########################################
+"TODO: may become obsolete with new updates ..
+"TODO: move to other file
+"TODO: return to this after 
+
+"fixing shifted function keys in vim in xterm in gnome-terminal"
+"credit: https://unix.stackexchange.com/questions/58361/how-to-fix-the-shifted-function-keys-in-vim-in-xterm-in-gnome-terminal
+
+if &term =~ '^gnome'
+execute "set <xUp>=\e[1;*A"
+execute "set <xDown>=\e[1;*B"
+execute "set <xRight>=\e[1;*C"
+execute "set <xLeft>=\e[1;*D"
+execute "set <xHome>=\e[1;*H"
+execute "set <xEnd>=\e[1;*F"
+execute "set <PageUp>=\e[5;*~"
+execute "set <PageDown>=\e[6;*~"
+execute "set <F1>=\eOP"
+execute "set <F2>=\eOQ"
+execute "set <F3>=\eOR"
+execute "set <F4>=\eOS"
+execute "set <xF1>=\eO1;*P"
+execute "set <xF2>=\eO1;*Q"
+"execute "set <xF2>=\eO2Q" " trying to get S-F2 work but it is sill confused
+"with Q. S-F2 key works in Konsole but not in Gnome, Tilix, Kity 
+execute "set <xF3>=\eO1;*R"
+execute "set <xF4>=\eO1;*S"
+execute "set <F5>=\e[15;*~"
+execute "set <F6>=\e[17;*~"
+execute "set <F7>=\e[18;*~"
+execute "set <F8>=\e[19;*~"
+execute "set <F9>=\e[20;*~"
+execute "set <F10>=\e[21;*~"
+execute "set <F11>=\e[23;*~"
+execute "set <F12>=\e[24;*~"
+endif
+
+"See :help xterm-function-keys and :help xterm-modifier-keys.
+
+
+

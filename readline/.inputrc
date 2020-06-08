@@ -1,0 +1,6 @@
+# configuration of GNU Readline
+
+
+Space: magic-space
+	# e.g. when you type space after !:2, it will be immediately expanded to its value
+	

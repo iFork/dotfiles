@@ -1,0 +1,14 @@
+{
+    //is this necessary for coc-clangd to work ?? :CocRestart to check
+    //"languageserver": {
+    //      "clangd": {
+    //          "enable": true,
+    //          "command": "clangd",
+    //          "rootPatterns": ["compile_commands.json", ".vim/", ".git/", ".hg/"],
+    //          "filetypes": ["c", "cpp", "objc", "objcpp"],
+    //          "args": ["-background-index"]
+    //      }
+    // },
+    //required by vim-lsp-cxx-highlight
+    "clangd.semanticHighlighting": true
+}
