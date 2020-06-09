@@ -138,8 +138,8 @@ Plug 'Xuyuanp/nerdtree-git-plugin' "for NERDTree to show git status flags
 	"and echom - message to notify loading
 Plug 'low-ghost/nerdtree-fugitive'  "adds some fugitive functionality 
 	"directly to nerdtree for vim
-if has(unix)
-	" Unix specific / non- win32 compatible plugin
+if has('unix')
+	" Unix specific / non- 'win32' compatible plugin
 	Plug 'junegunn/fzf', { 'do': { -> fzf#install() } } "fuzzy finder, main plugin
 							"required by fzf.vim
 	Plug 'junegunn/fzf.vim'
