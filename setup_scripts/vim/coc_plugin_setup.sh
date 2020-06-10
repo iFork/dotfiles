@@ -11,7 +11,11 @@ if [ ! -x "$(command -v node)" ]; then
 	#also like: curl -sL install-node.now.sh | sh
     #export PATH="/usr/local/bin/:$PATH"
     # Or use apt-get
-    sudo apt-get install nodejs
+    #sudo apt-get install nodejs
+    #or: (comes with npm):
+    curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -
+    sudo apt-get install -y nodejs
+    #see also: https://github.com/nodesource/distributions/blob/master/README.md
 fi
 
 if [ ! -x "$(command -v yarn)" ]; then
