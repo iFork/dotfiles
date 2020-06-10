@@ -165,12 +165,24 @@ Plug 'jackguo380/vim-lsp-cxx-highlight' "C/C++/ObjC semantic highlighting
 	"    "clangd.semanticHighlighting": "true"
 	"}
 
-"--Text work {{{3
+" Text work {{{3
+Plug 'tpope/vim-surround'  " parentheses, brackets, quotes, XML tags, and more
+	"Cheatlist:
+	"cs<old><new>: change 
+	"ysiw<new>,
+	"ys3w( <–yank,surround 3 words with ()
+	"yssb, yss) -- for line-wise 
+	"ys$ to surround from here to end of line
+	"ds<old> -- delete 
+	"Using the f surrounding prompts for a function name.  ysiWfbaz<cr>
+	"in Visual mode: S<p some tag details> 
+
 Plug 'godlygeek/tabular' "text filtering and alignment
 			"RequiredBy: 'vim-markdown'
 			"Alternatives: plugin not mentioned by 'vim-markdown' 
 			"is 'vim-easy-align'
 			"Cheatlist: :Tabular/pattern
+
 Plug 'junegunn/vim-easy-align' " text alignment
 	"Alternatives: easier than tabular (installed too)
 	"Cheatlist: after mapping 'ga' use: 
@@ -198,10 +210,36 @@ Plug 'junegunn/vim-easy-align' " text alignment
 		" :EasyAlign/#/{'ig':['String']}
 		" " Or more concisely with the shorthand notation;
 		" :EasyAlign/#/ig['String']
-		
+
 Plug 'plasticboy/vim-markdown' "Syntax highlighting, matching rules and mappings for 
-			"the original Markdown and extensions.
-			"Requires 'tabular' plugin to come before vim-markdown.
+	"the original Markdown and extensions.
+	"Requires 'tabular' plugin to come before vim-markdown.
+	"Cheatlist:
+	"
+	" ]] [[ ][ [] : navigating headers
+	" e.g. [] : go to previous sibling header if any. <Plug>Markdown_MoveToPreviousSiblingHeader
+	" ]c: go to Current header. <Plug>Markdown_MoveToCurHeader
+	" ]u: go to parent header (Up). <Plug>Markdown_MoveToParentHeader
+	" ge : follow named anchors 
+	"
+	" :TableFormat: Format the table under the cursor. Requires Tabular.
+	"
+	" :HeaderDecrease , HeaderIncrease
+	" :Toc: create a quickfix vertical window navigable table of contents with the headers.
+	" :Toch, :Toct: in tab  
+
+"
+
+Plug 'reedes/vim-pencil' " 
+	"For editing prose-oriented file types such as text, markdown, mail, rst, tex, textile, and asciidoc
+	"Adjusts navigation key mappings to suit the wrap mode
+	"Cheatlist: 
+	"Pencil - initialize pencil with auto-detect for the current buffer
+	"SoftPencil (or PencilSoft) - initialize pencil with soft line wrap mode
+	"HardPencil (or PencilHard) - initialize pencil with hard line break mode (and Vim’s autoformat)
+	"seems to map j/k to gj/gk
+
+
 Plug 'vim-voom/VOoM' " Vim Outliner of Markups  emulates a two-pane text outliner
 	"originaly .. start fold markers (fmr) with level numbers, that is {{{num,
 	"or fmr1, fmr2 ..
@@ -211,16 +249,18 @@ Plug 'vim-voom/VOoM' " Vim Outliner of Markups  emulates a two-pane text outline
 		"Handy for sorting paragraphs with **:VoomSort**.
 	"main Ex commands: Voom, Voomhelp, Voomexec, Voomlog.
 	"for help: Voomhelp , :h voom-quickstart
-	
+
 "Plug 'tpope/vim-commentary' "comment stuff out
 	"Cheatlist: gc<motion/object>, gcc<number> - line, gcgc - adjacent lines 
 	"ex command for toggling: Commentary
+
 Plug 'preservim/nerdcommenter' "comment stuff out 
 				"see configs below
 	"Review: Comparing to tpope's vim-commentary - tpope's supports text objects
 	"natively, this nerd plugin needs a workaround like `vip`command
 	"However this nerd ones has more styles and supports within line
 	"partial commenting 
+
 Plug 'tpope/vim-abolish' " search for, substitute, and abbreviate multiple variants of a word
 			" variants may be uppercase / lower-case 
 	"Cheatlist:
@@ -434,6 +474,12 @@ let g:one_allow_italics = 1
 " e.g. :AirlineTheme gruvbox_material
 let g:airline_powerline_fonts = 1
 let g:airline_section_x = '' "hide filetype  (vim)
+
+"vim-pencil integration
+" default indicators are:
+" let g:pencil#mode_indicators = {'hard': '␍', 'auto': 'ª', 'soft': '⤸', 'off': '',}"
+let g:airline_section_x = '%{PencilMode()}' 
+
 "let g:airline_section_y = '' "hide file encoding[fileformat] (utf-8[unix])
 
 "coc integration
@@ -466,14 +512,59 @@ let g:airline_section_z = airline#section#create_right(["%p%% : %l/%L \ue0a1 %c"
 	"default jsformatter unique_tail unique_tail_improved
 
 "-----------------------------------------
-" vim-markdown {{{2
+"--vim-surround {{{2
+"-----------------------------------------
+"add `let b:surround .... into ~/.vim/after/ftplugin/markdown.vim file.
+"or in autocmd like following
+"
+"markdown - bold, code block
+autocmd FileType markdown,mkd
+	\  let b:surround_{char2nr('8')} = "**\r**"
+	\| let b:surround_{char2nr('C')} = "```\r```"
+"see also: https://stackoverflow.com/questions/47400961/surround-visual-text-with-more-than-1-character
+
+
+" tagging URLs in Markdown
+" credit: https://stackoverflow.com/questions/18168540/mapping-surround-vim-plugin-to-add-markdown-link-in-visual-mode
+"TODO: Better put the :map commands into ~/.vim/ftplugin/{filetype}_mappings.vim. (This requires that you have :filetype plugin on.) instead of autocmd.
+" use buffer-local mappings, otherwise once mentioned file type has been entered - mapping stays in effect,
+autocmd FileType markdown,mkd
+	\  nmap <buffer> ysl <Plug>Ysurroundiw]%a(<C-R>*)<Esc>
+	\| vmap <buffer> Sl <Plug>VSurround]%a(<C-R>*)<Esc>
+
+	" \  nmap <buffer> <leader>l <Plug>Ysurroundiw]%a(<C-R>*)<Esc>
+	" \| vmap <buffer> <leader>l <Plug>VSurround]%a(<C-R>*)<Esc>
+" plasticboy/vim-markdown {{{2
 "-----------------------------------------
 "Syntax highlighting, matching rules and mappings for markdown
+
+" ge: to follow named anchors
+let g:vim_markdown_follow_anchor = 1
+" let g:vim_markdown_anchorexpr = "v:anchor"
 
 set conceallevel=2 "enable conceal, Vim's standard conceal configuration.
 let g:vim_markdown_toc_autofit = 1 "TOC window auto-fit when it's possible for it to shrink
 
+"to be able to specify language for code block as ```<language tag>
+"add language tag per mask: 
+"<markdown language tag (e.g. compatible with git)>=<vim filetype>
+let g:vim_markdown_fenced_languages = ['js=javascript', 'c++=cpp', 'viml=vim', 'bash=sh']
+"ISSUE: vim-pencil's auto-wrap setting *interferes* with syntax highlighting. 
+"Set SoftPencil (or HardPencil) to not break code block.
+
+
 "-----------------------------------------
+" vim-pencil--- {{{2
+"-----------------------------------------
+set wrap "causes vim to soft-wrap on the edge of the window.
+set linebreak "causes it to not break in the middle of a word, 
+	"but this will only work if the list setting is not enabled. Normally this isn’t a problem but if it’s not working you can :set nolist
+
+augroup pencil
+  autocmd!
+  autocmd FileType markdown,mkd call pencil#init()
+augroup END
+
 " vim-easymotion {{{2
 "-----------------------------------------
 
@@ -674,6 +765,8 @@ set nowritebackup
 "highlight column number X 
 set colorcolumn=80
 highlight ColorColumn ctermbg=darkgray	
+" highlight ColorColumn guibg=darkgray "for gui vim
+
 "OR
 "if exists('&colorcolumn')
 "	set colorcolumn=80
