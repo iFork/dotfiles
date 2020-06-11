@@ -73,7 +73,12 @@ endfunction
 " - Avoid using standard Vim directory names like 'plugin'
 silent! if plug#begin('~/.vim/plugged')
 " Declare the list of plugins.
-"Plug 'w0rp/ale'                 " linting plugin
+
+" (Optional) to register Vim help file for vim-plug itself
+" as standard vim-plug installation misses its help file. `:h plug-toc
+" credit: https://github.com/junegunn/vim-plug/issues/829#issuecomment-496852962
+Plug 'junegunn/vim-plug'
+
 "--Themes {{{3
 Plug 'morhetz/gruvbox'          " vim gruvbox color scheme
 Plug 'sainnhe/gruvbox-material' "modified gruvbox
@@ -365,6 +370,18 @@ augroup project
 augroup END
 
 "-----------------------------------------
+" File open handlers  {{{2
+"-----------------------------------------
+" To open images or other file links
+" see :h gx
+
+" if g:netrw_browsex_viewer exists, then it will be used to attempt to
+" view files. 
+" (but default seems fine).
+"let g:netrw_browsex_viewer= "xdg-open" 
+" or "gnome-open", "kfmclient exec"
+"
+"-----------------------------------------
 " Non-printable / Invisible Chracters {{{2
 "-----------------------------------------
 "list command config to display non-printable chracters
@@ -552,6 +569,15 @@ let g:vim_markdown_fenced_languages = ['js=javascript', 'c++=cpp', 'viml=vim', '
 "ISSUE: vim-pencil's auto-wrap setting *interferes* with syntax highlighting. 
 "Set SoftPencil (or HardPencil) to not break code block.
 
+"Issue: This plugin interferes with `gx`, `gx` cannot open standard filenames
+"e.g. "resource/pic.png" but can open markdown formatted links.
+"A workaround is to unmap `gx` by following:
+"see: https://github.com/plasticboy/vim-markdown/issues/353
+"see: https://github.com/plasticboy/vim-markdown/issues/372
+"see: https://github.com/plasticboy/vim-markdown/issues/301 for how to unmap
+"`ge` too
+nnoremap <Plug> <Plug>Markdown_OpenUrlUnderCursor
+
 
 "-----------------------------------------
 " vim-pencil--- {{{2
@@ -574,6 +600,16 @@ let g:EasyMotion_use_upper = 1
 let g:EasyMotion_smartcase = 1
 " Smartsign (type `3` and match `3`&`#`)
 let g:EasyMotion_use_smartsign_us = 1
+
+"-----------------------------------------
+" xolox/vim-session {{{2
+"-----------------------------------------
+
+  " If you don't want help windows to be restored:
+  set sessionoptions-=help
+  " Don't save hidden and unloaded buffers in sessions.
+  set sessionoptions-=buffers
+
 
 "-----------------------------------------
 " NERDTree / nerdtree {{{2
