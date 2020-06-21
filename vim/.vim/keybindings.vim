@@ -168,8 +168,12 @@ nmap ga <Plug>(EasyAlign)
 " vim-easymotion {{{2
 "-----------------------------------------
 "changing default <Leader><Leader> prefix 
+"Note: this interferes with  other plugin's (coc?) `\f` mapping
+"(`\f` is overridden)
+map <Leader> <Plug>(easymotion-prefix)
+
 " let g:EasyMotion_do_mapping = 0 " Disable default mappings
-" map <Leader> <Plug>(easymotion-prefix)
+
 " "s is bidirectional find motion, you can move to anywhere with it.
 " " Jump to anywhere you want with minimal keystrokes, with just one key binding.
 " " `s{char}{label}`
@@ -182,6 +186,19 @@ nmap ga <Plug>(EasyAlign)
 " map <Leader>j <Plug>(easymotion-j)
 " map <Leader>k <Plug>(easymotion-k)
 
+
+"-----------------------------------------
+" Filetype specific mappings {{{1
+"-----------------------------------------
+
+"-----------------------------------------
+" 	Markdown specific line rules {{{3 
+"-----------------------------------------
+
+"move by visual line, not actual line
+autocmd FileType markdown,mkd
+	\ nnoremap j gj
+	\| nnoremap k gk
 
 "-----------------------------------------
 " visual-at / macro in visual mode  {{{1

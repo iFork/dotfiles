@@ -216,7 +216,13 @@ Plug 'junegunn/vim-easy-align' " text alignment
 		" " Or more concisely with the shorthand notation;
 		" :EasyAlign/#/ig['String']
 
-Plug 'plasticboy/vim-markdown' "Syntax highlighting, matching rules and mappings for 
+" Plug 'tpope/vim-markdown'
+	" development version of Vim's included syntax highlighting and filetype plugins for Markdown. Generally you don't need to install these if you are running a recent version of Vim.
+	"Note: there is No link or inline-backtick conceal like in plasticboy's
+	"nor quotation formatting 
+
+	
+" Plug 'plasticboy/vim-markdown' "Syntax highlighting, matching rules and mappings for
 	"the original Markdown and extensions.
 	"Requires 'tabular' plugin to come before vim-markdown.
 	"Cheatlist:
@@ -232,8 +238,72 @@ Plug 'plasticboy/vim-markdown' "Syntax highlighting, matching rules and mappings
 	" :HeaderDecrease , HeaderIncrease
 	" :Toc: create a quickfix vertical window navigable table of contents with the headers.
 	" :Toch, :Toct: in tab  
+	"
+	"Issue: Links with a dot in their display name (ie. URL) breaks syntax highlighting for the rest of the file
+	"https://github.com/plasticboy/vim-markdown/issues/419
 
-"
+Plug 'VVVFO/vim-markdown' "fork of plasticboy/vim-markdown with #104 and #419 fixed
+	"Issue: does not format/conceal  emphasis `*a*`.
+	"TODO: Report issue ? 
+
+" Plug 'gabrielelana/vim-markdown'
+	"seems to not conceal links 
+
+"WARNING: combining 2 related plugins: VVVFO (plasticboy)'s markdown
+"with pandoc-syntax plugin to have former's `gx` url opening and latters
+"syntax highlighting (as VVVFO's version misses emphasising/italicizing on
+"`*..*`
+
+Plug 'vim-pandoc/vim-pandoc'
+Plug 'vim-pandoc/vim-pandoc-syntax'
+	"netrw `gx` on web urls is not ok (it creates local copy of webpage to
+	"open, after open, buffer is not useable, while plasticboy's is ok.
+	"seems to lacl internal cross-refernce jumps, like `ge` of plasticboy
+	"But has good conceal symbol replacers like lambda for ``` start
+	"and - for closing ```.
+
+" Plug 'SidOfc/mkdx' " adds some nice extra's for working with markdown
+	" Incompatability: plasticboy's markdown plugin interferes with 
+	" mkdx list indentation. Note that vim-polyglot plugin uses
+	" plasticboy's markdown.
+	" Note: Could not make `gx` (`gf`) mappings to open external URLs.
+	" While plugin implemented the feature.
+	" TO try: with pandoc-syntax but not with plasticboy
+
+"Preview markdown on your modern browser with synchronised scrolling and
+"flexible configuration
+" If you have nodejs and yarn
+Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app & yarn install' }
+" Installation:
+" If you don't have nodejs and yarn
+" use pre build, add 'vim-plug' to the filetype list so vim-plug can update this plugin
+" see: https://github.com/iamcco/markdown-preview.nvim/issues/50
+" Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() }, 'for': ['markdown', 'vim-plug']}
+"for help: https://github.com/iamcco/markdown-preview.nvim
+"Note: requires local image links in .md files to be relative 
+"paths - relative to the .md file's location.
+"Note: Autoscrolls on normal mode scroll.
+" For lagging autoscroll see its FAQ to update update time. 
+"Cheatlist: :MarkdownPreview :MarkdownPreviewToggle
+
+Plug 'suan/vim-instant-markdown', {'for': 'markdown'}
+"Installation:
+"Precond: Install the mini-server by running either:
+" sudo npm -g install instant-markdown-d
+"Note: resolves local image links as relative paths
+"- relative to the current `pwd`.
+"Issue: Autoscrolls only on text change.
+"Issue link: https://github.com/suan/vim-instant-markdown/issues/180#issuecomment-633919557
+"The scrolling will only work when file is modified, in insert mode.
+"Just moving the cursor in any modes (including insert mode) will not trigger the autoscroll though, but that is expected based on the doc
+
+Plug 'junegunn/limelight.vim' "Hyperfocus-writing
+	" Best served with Goyo.vim plugin 
+	"Cheatlist:
+	"Limelight [0.0 ~ 1.0]
+	"Limelight! - turn off
+	"Limelight!! [0.0 ~ 1.0] - toggle
+
 
 Plug 'reedes/vim-pencil' " 
 	"For editing prose-oriented file types such as text, markdown, mail, rst, tex, textile, and asciidoc
@@ -311,6 +381,8 @@ set showcmd "show pending sequence of vim commands
 set cmdheight=2 " Give more space for displaying messages.
 	" Recommended: by coc-plugin: 
 	"
+set conceallevel=2 "enable conceal, Vim's standard conceal configuration.
+	"for markdown formatting
 " Clear highlighting on escape in normal mode
 nnoremap <esc> :noh<return><esc>
 nnoremap <esc>^[ <esc>^[
@@ -529,10 +601,17 @@ let g:airline_section_z = airline#section#create_right(["%p%% : %l/%L \ue0a1 %c"
 	"default jsformatter unique_tail unique_tail_improved
 
 "-----------------------------------------
-"--vim-surround {{{2
+" vim-surround {{{2
 "-----------------------------------------
 "add `let b:surround .... into ~/.vim/after/ftplugin/markdown.vim file.
 "or in autocmd like following
+"
+"FIXME: `VjjSC` (```) breaks but `vjjSC` or `viwSC` works. 
+"Surrounding Visual line selection with ``` - indents instead. 
+"This only works after target lines are indented, first `VSC` indents selection
+"Try changing mapping char from `C` to `c` ?
+"Maybe `SC` is mapped elsewhere ? 
+"Check pandoc plugin conflict ?
 "
 "markdown - bold, code block
 autocmd FileType markdown,mkd
@@ -551,45 +630,124 @@ autocmd FileType markdown,mkd
 
 	" \  nmap <buffer> <leader>l <Plug>Ysurroundiw]%a(<C-R>*)<Esc>
 	" \| vmap <buffer> <leader>l <Plug>VSurround]%a(<C-R>*)<Esc>
-" plasticboy/vim-markdown {{{2
+
+"-----------------------------------------
+" tpope/vim-markdown {{{2
+"-----------------------------------------
+"
+"to be able to specify language for code block as ```<language tag>
+"add language tag per mask: 
+"<markdown language tag (e.g. compatible with git)>=<vim filetype>
+let g:markdown_fenced_languages = ['html', 'python', 'sh', 'js=javascript', 'cpp', 'vim']
+" let g:markdown_syntax_conceal = 0
+
+"-----------------------------------------
+" vim-markdown plasticboy's or VVVFO's {{{2
 "-----------------------------------------
 "Syntax highlighting, matching rules and mappings for markdown
 
-" ge: to follow named anchors
-let g:vim_markdown_follow_anchor = 1
-" let g:vim_markdown_anchorexpr = "v:anchor"
+"Disabling syntax elements to combine/use this plugin with
+"pandoc-syntax plugin's syntax formatting. 
+"To disable conceal regardless of conceallevel setting
+let g:vim_markdown_conceal = 0
+"To disable math conceal with LaTeX math syntax enabled
+let g:tex_conceal = ""
+let g:vim_markdown_math = 1
+"Disabling conceal for code fences
+let g:vim_markdown_conceal_code_blocks = 0
 
-set conceallevel=2 "enable conceal, Vim's standard conceal configuration.
+" `ge`: to follow named anchors
+let g:vim_markdown_follow_anchor = 1
+
 let g:vim_markdown_toc_autofit = 1 "TOC window auto-fit when it's possible for it to shrink
 
 "to be able to specify language for code block as ```<language tag>
 "add language tag per mask: 
 "<markdown language tag (e.g. compatible with git)>=<vim filetype>
 let g:vim_markdown_fenced_languages = ['js=javascript', 'c++=cpp', 'viml=vim', 'bash=sh']
-"ISSUE: vim-pencil's auto-wrap setting *interferes* with syntax highlighting. 
+"Possible issue: vim-pencil's auto-wrap setting *interferes* with syntax highlighting. 
 "Set SoftPencil (or HardPencil) to not break code block.
 
 "Issue: This plugin interferes with `gx`, `gx` cannot open standard filenames
 "e.g. "resource/pic.png" but can open markdown formatted links.
-"A workaround is to unmap `gx` by following:
+"A workaround is to format file names as markdown links, i.e. 
+"wrap in [resource/pic.png](resource/pic.png) 
+"Or another workaround is to unmap `gx` to keep netrw's `gx`  by following:
 "see: https://github.com/plasticboy/vim-markdown/issues/353
 "see: https://github.com/plasticboy/vim-markdown/issues/372
 "see: https://github.com/plasticboy/vim-markdown/issues/301 for how to unmap
 "`ge` too
-nnoremap <Plug> <Plug>Markdown_OpenUrlUnderCursor
-
+"Note: Also pay attention to current `pwd` and relativity of links.
+" nnoremap <Plug> <Plug>Markdown_OpenUrlUnderCursor
 
 "-----------------------------------------
+"  'gabrielelana/vim-markdown' {{{2
+"-----------------------------------------
+" let g:markdown_enable_conceal = 1
+
+"-----------------------------------------
+" 'vim-pandoc and vim-pandoc-syntax' {{{2
+"-----------------------------------------
+let g:pandoc#syntax#conceal#urls = 1
+let g:pandoc#syntax#codeblocks#embeds#langs = [ 'html', 'css', 'python', 'sh', 'js=javascript', 'cpp', 'vim']
+
+"if vim-pandoc plugin is not istalled, i.e. vim-pandoc-syntax as a standalone
+"plugin
+" augroup pandoc_syntax
+	" au! BufNewFile,BufFilePre,BufRead *.md set filetype=markdown.pandoc
+" augroup END
+
+"vim-pandoc 
+"To combine pandoc-syntax plugin  with 'plasticboy's plugin vim-pandoc plugin 
+"is needed with filetype change (to markdown.pandoc) turend off:
+"Disable the pandoc filetype for *.mkd and *.md files. This way, vim-pandoc is
+"still loaded, but uses the markdown syntax and the filetype is not modified.
+"Related Issue: the fact that vim-pandoc changes the ft of markdown files to
+"pandoc breaks every other markdown plugin.
+"see: https://github.com/vim-pandoc/vim-pandoc/issues/70
+let g:pandoc#filetypes#pandoc_markdown = 0
+
+"-----------------------------------------
+" 'SidOfc/mkdx' {{{2
+"-----------------------------------------
+" let g:mkdx#settings = {
+		" \ 'highlight': { 'enable': 1 },
+		" \ 'enter': { 'shift': 1 },
+		" \ 'links': { 'external': { 'enable': 1 } },
+		" \ 'toc': { 'text': 'Table of Contents', 'update_on_write': 1 },
+		" \ 'fold': { 'enable': 1 },
+		" \ 'image_extension_pattern': 'a\?png\|jpe\?g\|gif',
+		" \ 'gf_on_steroids': 1
+		" \ }
+
+" :h mkdx-setting-gf-on-steroids
+" :h mkdx-mapping-jump-to-file
+" :h mkdx-mapping-open-external-file
+"
+"-----------------------------------------
+" vim-instant-markdown {{{2
+"-----------------------------------------
+
+let g:instant_markdown_autoscroll = 1
+"However, still Autoscrolls only on text change.
+
+"-----------------------------------------
+" VOom {{{2
+"-----------------------------------------
+
+"setting appropriate fold type for the filetype
+let g:voom_ft_modes = {'markdown': 'markdown', 'pandoc': 'pandoc'}
+" For MultiMarkdown or GitHub Markdown the pandoc mode may also be more
+" appropriate to avoid false headlines in fenced code blocks.
+" let g:voom_default_mode = 'fmr' "this default out of the box
+
 " vim-pencil--- {{{2
 "-----------------------------------------
-set wrap "causes vim to soft-wrap on the edge of the window.
-set linebreak "causes it to not break in the middle of a word, 
-	"but this will only work if the list setting is not enabled. Normally this isn’t a problem but if it’s not working you can :set nolist
 
-augroup pencil
-  autocmd!
-  autocmd FileType markdown,mkd call pencil#init()
-augroup END
+" augroup pencil
+  " autocmd!
+  " autocmd FileType markdown,mkd call pencil#init()
+" augroup END
 
 " vim-easymotion {{{2
 "-----------------------------------------
@@ -767,6 +925,59 @@ source $VIMHOME/keybindings.vim
 "let &path.="src/include,/usr/include/AL,"	
 
 "########################################
+" Task/Project Specific Integrations {{{1
+"########################################
+ 
+"-----------------------------------------
+" joplin and markdown integration {{{2
+
+"buffer-local cd one level above current file's location.
+"For markdown previewer and netrw gx to work on joplin notes
+"from joplin/tmp folder
+autocmd FileType markdown,mkd
+	\  silent! lcd %:p:h
+	\| lcd ../
+
+" autocmd BufRead,BufNewFile */joplin/**
+	" \  silent! lcd %:p:h
+	" \| lcd ../
+
+"Issue: When opening joplin notes in vim, markdown link highlighting does not work
+"(using plasticboy vim-markdown). Need to manually reset filetype=markdown
+"or `:syntax on`.
+"
+"A possible workaround (NO, this turn out to be off-target).
+"NOTE: Actual problem seems to have relation with plasticboy's  
+"Issue #104 and is fixed by VVVFO's fork.
+"
+"Old NOTE: but following does not fit my issue precisely, does not fix. 
+" credit: https://stackoverflow.com/a/10515142 
+" Enable syntax highlighting when buffers were loaded through :bufdo, which
+" disables the Syntax autocmd event to speed up processing / to improve
+" performance .
+"
+"augroup EnableSyntaxHighlighting
+    " Filetype processing does happen, so we can detect a buffer initially
+    " loaded during :bufdo through a set filetype, but missing b:current_syntax.
+    " Also don't do this when the user explicitly turned off syntax highlighting
+    " via :syntax off.
+    " Note: Must allow nesting of autocmds so that the :syntax enable triggers
+    " the ColorScheme event. Otherwise, some highlighting groups may not be
+    " restored properly.
+"    autocmd! BufWinEnter * nested if exists('syntax_on') && ! exists('b:current_syntax') && ! empty(&l:filetype) | syntax enable | endif
+
+    " The above does not handle reloading via :bufdo edit!, because the
+    " b:current_syntax variable is not cleared by that. During the :bufdo,
+    " 'eventignore' contains "Syntax", so this can be used to detect this
+    " situation when the file is re-read into the buffer. Due to the
+    " 'eventignore', an immediate :syntax enable is ignored, but by clearing
+    " b:current_syntax, the above handler will do this when the reloaded buffer
+    " is displayed in a window again.
+"    autocmd! BufRead * if exists('syntax_on') && exists('b:current_syntax') && ! empty(&l:filetype) && index(split(&eventignore, ','), 'Syntax') != -1 | unlet! b:current_syntax | endif
+"augroup END
+
+
+"########################################
 " Tabs, Windows and Buffers {{{1
 "########################################
 set splitbelow splitright "when new files are open in split, 
@@ -796,8 +1007,15 @@ set nowritebackup
 " Style and Formatting Rules {{{1
 "########################################
 "-----------------------------------------
-" Line length {{{2
+" Line {{{2
 "-----------------------------------------
+set wrap "causes vim to soft-wrap on the edge of the window.
+set linebreak "causes it to not break in the middle of a word, 
+	"but this will only work if the list setting is not enabled. Normally
+	"this isn’t a problem but if it’s not working you can :set nolist
+	"Recommended by: `pencil` plugin
+
+" Line length 
 "highlight column number X 
 set colorcolumn=80
 highlight ColorColumn ctermbg=darkgray	
@@ -807,6 +1025,15 @@ highlight ColorColumn ctermbg=darkgray
 "if exists('&colorcolumn')
 "	set colorcolumn=80
 "endif
+
+"markdown rules
+"-----------------------------------------
+" 	Markdown specific line rules {{{3 
+"-----------------------------------------
+
+autocmd FileType markdown,mkd
+	\  set colorcolumn=0
+
 "-----------------------------------------
 " Tabulations / Indention Rules {{{2
 "-----------------------------------------
@@ -820,33 +1047,32 @@ set smarttab " Enabling this will make the tab key (in insert mode) insert space
 		" cursor is at the beginning of a line (i.e. the only preceding 
 		"characters are whitespace).
 
-
-"" set tabstop=4       " The width of a TAB is set to 4.
-""                     " Still it is a \t. It is just that
-""                     " Vim will interpret it to be having
-""                     " a width of 4.
-""   set shiftwidth=4  " Indents will have a width of 4
-""   set softtabstop=4 " Sets the number of columns for a TAB
+set tabstop=4       " The width of a TAB is set to 4.
+                    " Still it is a \t. It is just that
+                     " Vim will interpret it to be having
+                     " a width of 4.
+set shiftwidth=4  " Indents will have a width of 4
+set softtabstop=4 " Sets the number of columns for a TAB
 ""   set expandtab     " Expand TABs to spaces
 
 "-----------------------------------------
 " 	Cpp specific tab / indention {{{3 
 "-----------------------------------------
 autocmd Filetype    cpp 
-                \   set tabstop=4     |
-                \   set shiftwidth=4  |
-                \   set softtabstop=4 |
                 \   set expandtab      
 
 "-----------------------------------------
 " 	Python specific tab / indention  {{{3
 "-----------------------------------------
 autocmd Filetype    python 
-                \   set tabstop=4     |
-                \   set shiftwidth=4  |
-                \   set softtabstop=4 |
                 \   set expandtab      
 
+
+"-----------------------------------------
+" 	WebDev specific tab / indention  {{{3
+"-----------------------------------------
+autocmd Filetype    html,javascript,css 
+                \   set expandtab      
 
 "-----------------------------------------
 " Comment Formatting {{{2
@@ -860,7 +1086,6 @@ set formatoptions+=r  "auto-insert comment leader character
 "########################################
 " Language Specific Configs {{{1
 "########################################
-
 
 
 "########################################

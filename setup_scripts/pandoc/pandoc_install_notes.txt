@@ -1,0 +1,8 @@
+
+sudo apt install pandoc 
+
+# For PDF output, you’ll need LaTeX. We recommend installing TeX Live via your package manager. (On Debian/Ubuntu, apt-get install texlive.)
+
+sudo apt-get install texlive
+sudo apt-get install texlive-latex-extra
+
