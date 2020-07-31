@@ -24,15 +24,6 @@ endif
 "########################################
 " Plugin Management : vim-plug {{{1
 "########################################
-"-----------------------------------------
-" vim-plug: Automatically install missing plugins on startup {{{2
-"-----------------------------------------
-autocmd VimEnter *
-      \  if len(filter(values(g:plugs), '!isdirectory(v:val.dir)'))
-      \|   PlugInstall --sync | q
-      \| endif
-"-----------------------------------------
-
 " Cheatlist: vim-plug commands: 
 " :PlugInstall, :PlugUpdate, 
 " :PlugClean to remove undeclared plugins
@@ -46,7 +37,18 @@ autocmd VimEnter *
 "	autocmd! User vader.vim echom 'Vader is now loaded!'
 
 "-----------------------------------------
-" Plugins setup functions {{{2
+" vim-plug Helpers {{{2
+"-----------------------------------------
+"-----------------------------------------
+" vim-plug: Automatically install missing plugins on startup {{{3
+"-----------------------------------------
+autocmd VimEnter *
+      \  if len(filter(values(g:plugs), '!isdirectory(v:val.dir)'))
+      \|   PlugInstall --sync | q
+      \| endif
+
+"-----------------------------------------
+" Plugins setup functions {{{3
 "-----------------------------------------
 " Example: vim function
 "function! BuildYCM(info)
@@ -79,7 +81,8 @@ silent! if plug#begin('~/.vim/plugged')
 " credit: https://github.com/junegunn/vim-plug/issues/829#issuecomment-496852962
 Plug 'junegunn/vim-plug'
 
-"--Themes {{{3
+" Themes ----- {{{3
+" - gruvbox:
 Plug 'morhetz/gruvbox'          " vim gruvbox color scheme
 Plug 'sainnhe/gruvbox-material' "modified gruvbox
 Plug 'altercation/vim-colors-solarized'  "theme solarazed
@@ -91,7 +94,8 @@ Plug 'rakr/vim-one'
 Plug 'kyoz/purify', { 'rtp': 'vim' }
 Plug 'blueshirts/darcula' "InteliJ
 
-"-- General {{{3
+" General ----- {{{3
+
 Plug 'vim-airline/vim-airline' 	 " statusline
 Plug 'tpope/vim-fugitive' "git wrapper
 Plug 'tpope/vim-eunuch' "Helpers for UNIX / Linux commands wrapper
@@ -100,8 +104,110 @@ Plug 'tpope/vim-repeat' "Enable repeating supported plugin maps with '.'
 Plug 'easymotion/vim-easymotion' "Vim motions on speed
 	" Cheatlist:
 	" <leader><leader>w ; .. f<char> ; .. s<char>
-	"
-"-- Tabs, Windows and Buffers {{{3
+
+Plug 'bronson/vim-visual-star-search' " Search via */# in visuaol mode
+	" Cheatlist:
+	" <leader>* (\*) recursively vimgreps
+	" May change vimgrep to e.g. Ag see: <https://github.com/bronson/dotfiles/blob/a3ab0d6ee8d9e5e7f6e12444753330bab0200b0e/.vimrc#L344-L345>
+
+" Project / file management ----- {{{3
+
+Plug 'preservim/nerdtree' "file system explorer / project drawer
+	"Issue: when mksession is run when some of NERDTree panes are
+	"open - then loading such session fails.
+	"Use either vim-session plugin 
+	"or use vimpanel plugin instead of NERDTree 
+	"or put workaround functions from 
+	" https://stackoverflow.com/questions/4226905/vim-nerdtree-not-recovered-in-session-restore/42462073#42462073
+
+Plug 'xolox/vim-session'  " Extended session management for Vim
+	"Required: If you want NERDTree to not conflict with vim's 
+	"session loading (after mksession).
+	"Vim’s :mksession command isn’t really compatible with plug-ins that 
+	"create buffers with generated content and because of this session.vim
+	"includes specific workarounds for such plug-ins: 
+	"•BufExplorer, Project and NERD tree windows are supported;
+	"Cheatlist: h: session
+	":SaveSession 
+	":OpenSession 
+	":OpenTabSession, :SaveTabSession, :AppendTabSession
+Plug 'xolox/vim-misc' " scripts that are used by xolox's plug-ins 
+		      "RequiredBy: xolox/vim-session 
+
+Plug 'Xuyuanp/nerdtree-git-plugin' "for NERDTree to show git status flags
+	"TODO: make on-demand loading {'on': 'Git'} "on fugitive commands
+	"and echom - message to notify loading
+Plug 'low-ghost/nerdtree-fugitive'  "adds some fugitive functionality 
+	"directly to nerdtree for vim
+	
+if has('unix')
+	" Unix specific / non- 'win32' compatible plugin
+	Plug 'junegunn/fzf', { 'do': { -> fzf#install() } } "fuzzy finder, main plugin
+							"required by fzf.vim
+	Plug 'junegunn/fzf.vim'
+endif
+
+
+Plug 'wakatime/vim-wakatime' "Time tracker, Productivity monitoring
+	" :WakaTimeToday - echo your total coding activity for Today
+	" dashboard: <https://wakatime.com/dashboard>
+
+
+" Language semantics ----- {{{3
+
+Plug 'majutsushi/tagbar' "sidebar that displays the ctags-generated 
+			"tags of the current file, ordered by their scop
+			"Dependency: ctags. recommended is universal-ctags.
+			" https://github.com/universal-ctags/ctags/blob/master/docs/autotools.rst 
+"Intellisense engine like VSCode, Language Server Protocol - Client
+Plug 'neoclide/coc.nvim', {'do': function('Coc_plugin_setup'), 'branch': 'release' } 
+
+
+" Syntax Highlighting {{{3
+
+Plug 'jackguo380/vim-lsp-cxx-highlight' "C/C++/ObjC semantic highlighting 
+					"using the language server protocol.
+	"https://github.com/jackguo380/vim-lsp-cxx-highlight/blob/master/README.md 
+	"TODO: configure / make it work after fixing clangd
+	"Note: For vim +timers and +byte_offset are recommended but not required.
+	"for clangd language server Requires coc.nvim and coc-clangd
+	"For clangd coc-settings.json must have:
+	"{
+	"    "clangd.semanticHighlighting": "true"
+	"}
+
+" Plug 'othree/yajs.vim' " JavaScript syntax
+	" Performance Issue:
+	" yajs.vim is not good on performance. If you are using a slow computer. You might feel lag while moving the cursor. You can try disable cursorline and colorcolumn, or reduce the number of synmaxcol. Another possible solution is change to neovim
+	" If you still want cursor line highlight, some terminal has their built-in support. Ex: iTerm2, Edit Profile -> Colors -> Cursor Colors.
+	" Features :
+	" Use 'javascript' as group name's prefix, not 'javaScript' nor 'JavaScript'. Works great with SyntaxComplete.
+	" Recognize Web API and DOM keywords. Base on Mozilla's WebIDL files
+	" Works perfect with javascript-libraries-syntax.vim
+
+" Plug 'HerringtonDarkholme/yats.vim'
+
+Plug 'pangloss/vim-javascript' 
+	" does not mark JSX region in a way that 'suy/vim-context-commentstring' 
+	" will understand
+
+Plug 'MaxMEllon/vim-jsx-pretty' " JSX and TSX syntax pretty highlighting
+	" On its own, coloring is not as elaborate as of 'vim-javascript'
+	" Needed for 'suy/vim-context-commentstring' to 
+	" understand JSX region to set proper commentstring.
+
+
+" Plug 'othree/javascript-libraries-syntax.vim'
+	" Note: may use this with `SyntaxComplete` for complittion of JS 
+	" libraries without dedicated language server support
+
+Plug 'gerw/vim-HiLinkTrace' " Syntax highlight Debugging
+	" traces the highlighting linkages; ie. just what highlighting groups associated with the word under the cursor? Plus, when :HLT! is used to invoke hilight.vim, one gets syntax highlighting updates as one moves the cursor.
+	" \hlt or :HLT : reveals a linked list of highlighting from the top-level
+	" down to the bottom level for the cursor position
+
+" Tabs, Windows and Buffers ----- {{{3
+
 Plug 'dhruvasagar/vim-zoom'  " Toggle zoom in / out individual windows
 	"Review: This is latest chronologically.
 	"Alternatives are 
@@ -116,61 +222,43 @@ Plug 'dhruvasagar/vim-zoom'  " Toggle zoom in / out individual windows
 	" set statusline+=%{zoom#statusline()}
 	" Note: not cooperative with NERDTree
 
-"--Project drawer / file management {{{3
-Plug 'preservim/nerdtree' "file system explorer
-	"Issue: when mksession is run when some of NERDTree panes are
-	"open - then loading such session fails.
-	"Use either vim-session plugin 
-	"or use vimpanel plugin instead of NERDTree 
-	"or put workaround functions from 
-	" https://stackoverflow.com/questions/4226905/vim-nerdtree-not-recovered-in-session-restore/42462073#42462073
-	"
-Plug 'xolox/vim-session'  " Extended session management for Vim
-	"Required: If you want NERDTree to not conflict with vim's 
-	"session loading (after mksession).
-	"Vim’s :mksession command isn’t really compatible with plug-ins that 
-	"create buffers with generated content and because of this session.vim
-	"includes specific workarounds for such plug-ins: 
-	"•BufExplorer, Project and NERD tree windows are supported;
-	"Cheatlist: h: session
-	":SaveSession 
-	":OpenSession 
-	":OpenTabSession, :SaveTabSession, :AppendTabSession
-Plug 'xolox/vim-misc' " scripts that are used by xolox's plug-ins 
-		      "RequiredBy: xolox/vim-session 
-Plug 'Xuyuanp/nerdtree-git-plugin' "for NERDTree to show git status flags
-	"TODO: make on-demand loading {'on': 'Git'} "on fugitive commands
-	"and echom - message to notify loading
-Plug 'low-ghost/nerdtree-fugitive'  "adds some fugitive functionality 
-	"directly to nerdtree for vim
-if has('unix')
-	" Unix specific / non- 'win32' compatible plugin
-	Plug 'junegunn/fzf', { 'do': { -> fzf#install() } } "fuzzy finder, main plugin
-							"required by fzf.vim
-	Plug 'junegunn/fzf.vim'
-endif
+Plug 'vim-voom/VOoM' " Vim Outliner of Markups  emulates a two-pane text outliner
+	"originaly .. start fold markers (fmr) with level numbers, that is {{{num,
+	"or fmr1, fmr2 ..
+	"Cheatlist: create outline by :Voom [MarkupMode]
+	"MarkupMode can be: fmr - default, markdown, 
+		"Paragraphs (:Voom paragraph{Blank|Indent|NoIndent}). Blocks of lines. 
+		"Handy for sorting paragraphs with **:VoomSort**.
+	"main Ex commands: Voom, Voomhelp, Voomexec, Voomlog.
+	"for help: Voomhelp , :h voom-quickstart
 
-"--Language semantics {{{3
-Plug 'majutsushi/tagbar' "sidebar that displays the ctags-generated 
-			"tags of the current file, ordered by their scop
-			"Dependency: ctags. recommended is universal-ctags.
-			" https://github.com/universal-ctags/ctags/blob/master/docs/autotools.rst 
-"Intellisense engine like VSCode, Language Server Protocol - Client
-Plug 'neoclide/coc.nvim', {'do': function('Coc_plugin_setup'), 'branch': 'release' } 
-"Plug 'neoclide/coc.nvim', {'do': function('Coc_plugin_setup'), 'branch': 'release' } 
+" Reading ----- {{{3
 
-Plug 'jackguo380/vim-lsp-cxx-highlight' "C/C++/ObjC semantic highlighting 
-					"using the language server protocol.
-	"https://github.com/jackguo380/vim-lsp-cxx-highlight/blob/master/README.md 
-	"TODO: configure / make it work after fixing clangd
-	"Note: For vim +timers and +byte_offset are recommended but not required.
-	"for clangd language server Requires coc.nvim and coc-clangd
-	"For clangd coc-settings.json must have:
-	"{
-	"    "clangd.semanticHighlighting": "true"
-	"}
+Plug 'junegunn/limelight.vim' "Hyperfocus-writing
+	" dimms other paragraphs/lines
+	" Best served with Goyo.vim plugin 
+	"Cheatlist:
+	"Limelight [0.0 ~ 1.0] // transparency factor 
+	"Limelight! - turn off
+	"Limelight!! [0.0 ~ 1.0] - toggle
 
-" Text work {{{3
+" Plug 'junegunn/goyo.vim' "Distraction-free writing
+	" padding with margins
+	"Cheatlist:
+	" :Goyo // Toggle Goyo
+	" :Goyo [dimension]  // Turn on or resize Goyo
+	"  Width  :Goyo 120 // Height  :Goyo x30 // Both :Goyo 120x30
+	" In percentage :Goyo 120x50%
+	" With offsets :Goyo 50%+25%x50%-25%
+
+" Text work ------ {{{3
+
+" Snippets
+Plug 'SirVer/ultisnips' " Snippets engine 
+" Plug 'honza/vim-snippets' " Snippet source, replaced with
+							" my fork 
+Plug 'iFork/vim-snippets' " my fork of 'honza/vim-snippets' 
+
 Plug 'tpope/vim-surround'  " parentheses, brackets, quotes, XML tags, and more
 	"Cheatlist:
 	"cs<old><new>: change 
@@ -181,6 +269,22 @@ Plug 'tpope/vim-surround'  " parentheses, brackets, quotes, XML tags, and more
 	"ds<old> -- delete 
 	"Using the f surrounding prompts for a function name.  ysiWfbaz<cr>
 	"in Visual mode: S<p some tag details> 
+
+Plug 'tpope/vim-abolish' " search for, substitute, and abbreviate multiple variants of a word
+			" variants may be uppercase / lower-case 
+	"Cheatlist:
+	"--Substitution
+	" preserves original uppercase / lower-case styling in a word
+	":S[ubvert]/child{,ren}/adult{,s}/g
+	"--Coercion
+	"convert between naming styles 
+	" crs (coerce to snake_case). camelCase (crc), 
+	" UPPER_CASE (cru), dash-case (cr-), 
+	" space case (cr<space>), and Title Case (crt), etc.
+	"--Abbreviation 
+	"for common spelling error corrections 
+	"following one command produces 48 abbreviations including all of the above.
+	":Abolish {despa,sepe}rat{e,es,ed,ing,ely,ion,ions,or}  {despe,sepa}rat{}
 
 Plug 'godlygeek/tabular' "text filtering and alignment
 			"RequiredBy: 'vim-markdown'
@@ -215,6 +319,11 @@ Plug 'junegunn/vim-easy-align' " text alignment
 		" :EasyAlign/#/{'ig':['String']}
 		" " Or more concisely with the shorthand notation;
 		" :EasyAlign/#/ig['String']
+
+" Markdown ----- {{{3
+" ***
+" * Note: some of markdown plugins sets foldcolumn=1, so left gutter becomes wider.
+" ***
 
 " Plug 'tpope/vim-markdown'
 	" development version of Vim's included syntax highlighting and filetype plugins for Markdown. Generally you don't need to install these if you are running a recent version of Vim.
@@ -297,15 +406,7 @@ Plug 'suan/vim-instant-markdown', {'for': 'markdown'}
 "The scrolling will only work when file is modified, in insert mode.
 "Just moving the cursor in any modes (including insert mode) will not trigger the autoscroll though, but that is expected based on the doc
 
-Plug 'junegunn/limelight.vim' "Hyperfocus-writing
-	" Best served with Goyo.vim plugin 
-	"Cheatlist:
-	"Limelight [0.0 ~ 1.0]
-	"Limelight! - turn off
-	"Limelight!! [0.0 ~ 1.0] - toggle
-
-
-Plug 'reedes/vim-pencil' " 
+" Plug 'reedes/vim-pencil' "
 	"For editing prose-oriented file types such as text, markdown, mail, rst, tex, textile, and asciidoc
 	"Adjusts navigation key mappings to suit the wrap mode
 	"Cheatlist: 
@@ -315,19 +416,16 @@ Plug 'reedes/vim-pencil' "
 	"seems to map j/k to gj/gk
 
 
-Plug 'vim-voom/VOoM' " Vim Outliner of Markups  emulates a two-pane text outliner
-	"originaly .. start fold markers (fmr) with level numbers, that is {{{num,
-	"or fmr1, fmr2 ..
-	"Cheatlist: create outline by :Voom [MarkupMode]
-	"MarkupMode can be: fmr - default, markdown, 
-		"Paragraphs (:Voom paragraph{Blank|Indent|NoIndent}). Blocks of lines. 
-		"Handy for sorting paragraphs with **:VoomSort**.
-	"main Ex commands: Voom, Voomhelp, Voomexec, Voomlog.
-	"for help: Voomhelp , :h voom-quickstart
+" Commenting ----- {{{3
 
 "Plug 'tpope/vim-commentary' "comment stuff out
 	"Cheatlist: gc<motion/object>, gcc<number> - line, gcgc - adjacent lines 
 	"ex command for toggling: Commentary
+
+Plug 'tpope/vim-commentary' " 
+	" supports in-JSX region commenting 
+	" as it respects commentstring changes within a file (e.g. by
+	" 'suy/vim-context-commentstring')
 
 Plug 'preservim/nerdcommenter' "comment stuff out 
 				"see configs below
@@ -335,24 +433,73 @@ Plug 'preservim/nerdcommenter' "comment stuff out
 	"natively, this nerd plugin needs a workaround like `vip`command
 	"However this nerd ones has more styles and supports within line
 	"partial commenting 
+	"Issue: no context aware commenting, e.g. in JSX region. Now it cashes
+	"commentstring of a file according to this user report: https://github.com/preservim/nerdcommenter/issues/17#issuecomment-447391324
+	"which prevents plugins such as  'suy/vim-context-commentstring' to have
+	"effect.
+	"Or needs more configuration using its 'hooks' feature: https://github.com/preservim/nerdcommenter/pull/249 
 
-Plug 'tpope/vim-abolish' " search for, substitute, and abbreviate multiple variants of a word
-			" variants may be uppercase / lower-case 
-	"Cheatlist:
-	"--Substitution
-	" preserves original uppercase / lower-case styling in a word
-	":S[ubvert]/child{,ren}/adult{,s}/g
-	"--Coercion
-	"convert between naming styles 
-	" crs (coerce to snake_case). camelCase (crc), 
-	" UPPER_CASE (cru), dash-case (cr-), 
-	" space case (cr<space>), and Title Case (crt), etc.
-	"--Abbreviation 
-	"for common spelling error corrections 
-	"following one command produces 48 abbreviations including all of the above.
-	":Abolish {despa,sepe}rat{e,es,ed,ing,ely,ion,ions,or}  {despe,sepa}rat{}
 
-" --Meta Helpers {{{3
+Plug 'suy/vim-context-commentstring'
+	" sets the value of ‘commentstring’ to a different value depending on the region of the file you are in.
+	" Good for inside React JSX commenting
+	" TODO: Needs configuration or fitting syntax highlighting plugin
+	" respecting JSX
+	" manual: https://raw.githubusercontent.com/suy/vim-context-commentstring/master/doc/context-commentstring.txt
+	" User example: https://www.reddit.com/r/neovim/comments/bpor5u/vim_for_react_typescript_jsx/er6zyus/
+	" uses tim popes commenter plugin
+		" Plug 'tpope/vim-commentary'
+		" Plug 'suy/vim-context-commentstring'
+		" The last one is to comment Typescript and Typescript JSX with different comment styles accordingly.
+		" // and {/* ... */}
+		" Reserch user's configs at: 
+			" https://github.com/Arelav/dotfiles and
+			" https://github.com/Arelav/vim-context-commentstring/commit/b9e09f3a390c2714ca52053fb97a81333b145e32
+			" clone and grep git history for commentstring
+
+
+" WebDev ----- {{{3 
+
+" Plug 'tmhedberg/matchit' " extended % matching for HTML, LaTeX,
+						 " " and many other languages
+Plug 'andymass/vim-matchup' " Extends vim's % motion 
+	" to language-specific words (such as if / endif)
+	" enhances all of matchit's features
+	"
+	" Adds motions g%, [%, ]%, (like [(, ]) ) 
+	" and z% (go to inside [count]th nearest inner contained block)
+	" To include the close word, use either dv]% or vd]%. This is also compatible with vim's d]) and d]}
+	" Operators over *backward exclusive* motions will instead exclude the position the cursor was on before the operator was invoked. 
+	" Unlike ]%, % is an inclusive motion.
+	"
+	" text objects i% and a%
+
+Plug 'heavenshell/vim-jsdoc', { 
+	\ 'for': ['javascript', 'javascript.jsx','typescript'], 
+	\ 'do': 'make install'
+	\}
+	" Documentation (like Doxygen): generates JSDoc block comments based on a function signature.
+	" link: <https://github.com/heavenshell/vim-jsdoc>
+	" Cheatlist:
+	" :JsDoc 
+		" Move cursor on function keyword line
+		" Type :JsDoc to insert JSDoc
+	" :JsDocFormat
+		" Type :JsDocFormat
+		" Insert JSDoc above the all signatures
+
+Plug 'ternjs/tern_for_vim', { 'do': 'npm install' }
+	"RequiredBy: jsctags (jsctags requres tern in general),
+	" recommended by 'tagbar' and installed for 'tagbar' to use 
+	" 'jsctags'
+	" link: https://github.com/majutsushi/tagbar/wiki#javascript
+	" Check Alternative: check if instead 'tern_for_vim' we can install
+	" 'tern' on our machine. In that case 'tagbar' maybe will not show
+	" improved JS tags without additional configuration.
+
+
+" Meta Helpers ----- {{{3
+
 Plug 'liuchengxu/vim-which-key' " shows keybindings in popup
 " Key guide is an additional layer. It will only activate, when you do not 
 " complete your input during the timeoutlen duration.
@@ -372,7 +519,7 @@ endif
 " plug#begin() and plug#end()
 
 "########################################
-" Presentation / Visualization {{{1
+" UI / Presentation / Visuals {{{1
 "########################################
 "set number  "show row number
 set number relativenumber " Display relative numbers
@@ -383,9 +530,6 @@ set cmdheight=2 " Give more space for displaying messages.
 	"
 set conceallevel=2 "enable conceal, Vim's standard conceal configuration.
 	"for markdown formatting
-" Clear highlighting on escape in normal mode
-nnoremap <esc> :noh<return><esc>
-nnoremap <esc>^[ <esc>^[
 
 " Searching
 set hlsearch
@@ -393,9 +537,26 @@ set ignorecase " case insensitive searching
 set smartcase " case-sensitive if expresson contains a capital letter
 set incsearch " set incremental search, like modern browsers
 set nolazyredraw " don't redraw while executing macros
+" Clear highlighting on escape in normal mode
+nnoremap <esc> :noh<return><esc>
+nnoremap <esc>^[ <esc>^[
+
+set scrolloff=1 " Minimum number of lines above and below cursor / offset
+set wildmenu  " Display completion matches in a status line
+
+" Change cursor shape in different modes
+let &t_EI = "\033[2 q" " NORMAL  █
+let &t_SI = "\033[5 q" " INSERT  |
+let &t_SR = "\033[3 q" " REPLACE _
+
+" Split separator 
+" Make separator between split windows a continuous line.
+" Note: some fonts may not work for this.
+set fillchars+=vert:\│
+hi VertSplit cterm=none ctermbg=none
 
 "-----------------------------------------
-" Sign column / gutter {{{2
+" Sign column / Foldcolumn / gutter {{{2
 "-----------------------------------------
 " Recommended: by coc-plugin: 
 " Always show the signcolumn, otherwise it would shift the text each time
@@ -430,16 +591,40 @@ set showmatch " show matching braces
 let python_highlight_all = 1 
 
 "-----------------------------------------
-" Filetypes / Compound w/ subtypes {{{2
+" Filetype Specific {{{2
+"-----------------------------------------
+
+"Quickfix and location list window
+autocmd FileType qf
+	\ set norelativenumber
+	\| set nospell
+
+"-----------------------------------------
+" Filetypes / Compound ft w/ subtypes {{{3
 "-----------------------------------------
 filetype plugin on " Filetype detection
 "Filetype detection, set subtypes
 "set subtype to doxygen to enable doxygen highlighting.
-augroup project
+augroup cpp_project
   autocmd!
   autocmd BufRead,BufNewFile *.h,*.c set filetype=c.doxygen
   autocmd BufNewFile,BufReadPost *.hpp,*.cpp set filetype=cpp.doxygen "my addition
 augroup END
+
+augroup react_project
+  autocmd!
+  autocmd BufRead,BufNewFile *.js set filetype=javascript.jsx
+  autocmd BufRead,BufNewFile *.ts set filetype=typescript.tsx
+  " Recommended by: coc-tsserver. 
+  " In coc.nvim, these filetypes are mapped to javascriptreact and typescriptreact because that's what tsserver uses.
+augroup END
+
+" TODO: set ft for .ts as typescript
+" by default .ts file are not identified as typescript and .tsx files are not
+" identified as typescript react file, so add following
+" au BufNewFile,BufRead *.ts setlocal filetype=typescript
+" au BufNewFile,BufRead *.tsx setlocal filetype=typescript.tsx
+
 
 "-----------------------------------------
 " File open handlers  {{{2
@@ -557,7 +742,17 @@ let g:one_allow_italics = 1
 "colorscheme darcula
 
 "-----------------------------------------
-" airline / Airlin {{{2 
+
+" othree/javascript-libraries-syntax.vim {{{2
+"-----------------------------------------
+" let g:used_javascript_libs = 'react'
+
+" For library IDs see readme.
+" can use local vimrc to setup libraries used in project. Sample code for
+" local vimrc.
+" See readme: https://github.com/othree/javascript-libraries-syntax.vim
+
+" airline {{{2 
 "-----------------------------------------
 " To apply  airline color scheme without reloading:
 " e.g. :AirlineTheme gruvbox_material
@@ -567,11 +762,12 @@ let g:airline_section_x = '' "hide filetype  (vim)
 "vim-pencil integration
 " default indicators are:
 " let g:pencil#mode_indicators = {'hard': '␍', 'auto': 'ª', 'soft': '⤸', 'off': '',}"
-let g:airline_section_x = '%{PencilMode()}' 
+" let g:airline_section_x = '%{PencilMode()}'
 
 "let g:airline_section_y = '' "hide file encoding[fileformat] (utf-8[unix])
 
 "coc integration
+"h: coc-status
 let g:airline_section_error = '%{airline#util#wrap(airline#extensions#coc#get_error(),0)}'
 let g:airline_section_warning = '%{airline#util#wrap(airline#extensions#coc#get_warning(),0)}'
 
@@ -632,7 +828,9 @@ autocmd FileType markdown,mkd
 	" \| vmap <buffer> <leader>l <Plug>VSurround]%a(<C-R>*)<Esc>
 
 "-----------------------------------------
-" tpope/vim-markdown {{{2
+" Markdown--- {{{2
+
+" tpope/vim-markdown {{{3
 "-----------------------------------------
 "
 "to be able to specify language for code block as ```<language tag>
@@ -642,7 +840,7 @@ let g:markdown_fenced_languages = ['html', 'python', 'sh', 'js=javascript', 'cpp
 " let g:markdown_syntax_conceal = 0
 
 "-----------------------------------------
-" vim-markdown plasticboy's or VVVFO's {{{2
+" vim-markdown plasticboy's or VVVFO's {{{3
 "-----------------------------------------
 "Syntax highlighting, matching rules and mappings for markdown
 
@@ -681,15 +879,15 @@ let g:vim_markdown_fenced_languages = ['js=javascript', 'c++=cpp', 'viml=vim', '
 " nnoremap <Plug> <Plug>Markdown_OpenUrlUnderCursor
 
 "-----------------------------------------
-"  'gabrielelana/vim-markdown' {{{2
+" 'gabrielelana/vim-markdown' {{{3
 "-----------------------------------------
 " let g:markdown_enable_conceal = 1
 
 "-----------------------------------------
-" 'vim-pandoc and vim-pandoc-syntax' {{{2
+" 'vim-pandoc and vim-pandoc-syntax' {{{3
 "-----------------------------------------
 let g:pandoc#syntax#conceal#urls = 1
-let g:pandoc#syntax#codeblocks#embeds#langs = [ 'html', 'css', 'python', 'sh', 'js=javascript', 'cpp', 'vim']
+let g:pandoc#syntax#codeblocks#embeds#langs = [ 'html', 'css', 'python', 'bash=sh', 'js=javascript', 'cpp', 'vim']
 
 "if vim-pandoc plugin is not istalled, i.e. vim-pandoc-syntax as a standalone
 "plugin
@@ -708,7 +906,7 @@ let g:pandoc#syntax#codeblocks#embeds#langs = [ 'html', 'css', 'python', 'sh', '
 let g:pandoc#filetypes#pandoc_markdown = 0
 
 "-----------------------------------------
-" 'SidOfc/mkdx' {{{2
+" 'SidOfc/mkdx' {{{3
 "-----------------------------------------
 " let g:mkdx#settings = {
 		" \ 'highlight': { 'enable': 1 },
@@ -725,11 +923,20 @@ let g:pandoc#filetypes#pandoc_markdown = 0
 " :h mkdx-mapping-open-external-file
 "
 "-----------------------------------------
-" vim-instant-markdown {{{2
+" vim-instant-markdown {{{3
 "-----------------------------------------
 
 let g:instant_markdown_autoscroll = 1
 "However, still Autoscrolls only on text change.
+
+"-----------------------------------------
+" vim-pencil--- {{{3
+"-----------------------------------------
+
+" augroup pencil
+  " autocmd!
+  " autocmd FileType markdown,mkd call pencil#init()
+" augroup END
 
 "-----------------------------------------
 " VOom {{{2
@@ -741,14 +948,7 @@ let g:voom_ft_modes = {'markdown': 'markdown', 'pandoc': 'pandoc'}
 " appropriate to avoid false headlines in fenced code blocks.
 " let g:voom_default_mode = 'fmr' "this default out of the box
 
-" vim-pencil--- {{{2
 "-----------------------------------------
-
-" augroup pencil
-  " autocmd!
-  " autocmd FileType markdown,mkd call pencil#init()
-" augroup END
-
 " vim-easymotion {{{2
 "-----------------------------------------
 
@@ -849,6 +1049,61 @@ let g:NERDTrimTrailingWhitespace = 1
 "let g:NERDToggleCheckAllLines = 1
 
 "-----------------------------------------
+" majutsushi/tagbar {{{2
+"-----------------------------------------
+"tags for JSON
+let g:tagbar_type_json = {
+    \ 'ctagstype' : 'json',
+    \ 'kinds' : [
+      \ 'o:objects',
+      \ 'a:arrays',
+      \ 'n:numbers',
+      \ 's:strings',
+      \ 'b:booleans',
+      \ 'z:nulls'
+    \ ],
+  \ 'sro' : '.',
+    \ 'scope2kind': {
+    \ 'object': 'o',
+      \ 'array': 'a',
+      \ 'number': 'n',
+      \ 'string': 's',
+      \ 'boolean': 'b',
+      \ 'null': 'z'
+    \ },
+    \ 'kind2scope': {
+    \ 'o': 'object',
+      \ 'a': 'array',
+      \ 'n': 'number',
+      \ 's': 'string',
+      \ 'b': 'boolean',
+      \ 'z': 'null'
+    \ },
+    \ 'sort' : 0
+    \ }
+
+" CSS 
+" CSS support requires the use of Universal Ctags 
+let g:tagbar_type_css = {
+\ 'ctagstype' : 'Css',
+    \ 'kinds'     : [
+        \ 'c:classes',
+        \ 's:selectors',
+        \ 'i:identities'
+    \ ]
+\ }
+
+" UltiSnips
+" Its configuration is now included in current versions of UltiSnips.
+
+" SirVer/ultisnips {{{2
+"-----------------------------------------
+" Trigger configuration. Do not use <tab> if you use https://github.com/Valloric/YouCompleteMe.
+let g:UltiSnipsExpandTrigger="**"
+let g:UltiSnipsJumpForwardTrigger="<c-b>"
+let g:UltiSnipsJumpBackwardTrigger="<c-z>"
+
+
 " coc configs  {{{2
 "-----------------------------------------
 	"See: keybindings.vim
@@ -880,16 +1135,53 @@ set statusline^=%{coc#status()}%{get(b:,'coc_current_function','')}
 
 
 "-----------------------------------------
-"	 coc extensions configs  {{{2
+" coc extensions configs  {{{3
 "-----------------------------------------
 "Coc.nvim will try to load javascript files in the folder $VIMCONFIG/coc-extensions
 "let $VIMCONFIG = $VIMHOME "HAD NO effect, it still went int o.config/coc/extensions
+
+" NOTE: Checking Completion source codes (e.g. [A], [B], etc):
+" Use command :CocList sources to get current completion source list.
 
 "make coc automatically install these extensions
 let g:coc_global_extensions = ['coc-json'
 				\, 'coc-clangd' 
 				\, 'coc-lists' 
+				\, 'coc-tsserver'
+				\, 'coc-css'
+				\, 'coc-ultisnips'
 				\ ]
+				" \, 'coc-eslint'
+				" \, 'coc-prettier'
+				" \, 'coc-html'
+				" \, 'coc-ultisnips', 'coc-emmet'
+				" \, 'coc-react-refactor'
+				" https://www.npmjs.com/package/coc-react-refactor
+				" \, 'coc-yank'
+
+" Coc Extension Notes
+
+		" coc-tsserver: 
+		" for javascript project, configure jsconfig.json to make tsserver understand your code.
+
+		" coc-ultisnips
+		" link: https://github.com/neoclide/coc-sources
+		" Completion for items from ultisnips
+		" Important: this source could be block and not work when ultisnips plugin not loaded in vim.
+		" Q: Completion items of Ultisnips/neosnippet not shown.
+		" A: It won't work when your ultisnips or neosnippet plugin not loaded. For better experience, consider use coc-snippets instead.
+		" Config options: https://github.com/neoclide/coc-sources#configure
+
+		" coc-snippets
+		"snippets.ultisnips.directories: directories that searched for snippet files, could be subfolder in every $runtimepath or absolute paths, default: ["UltiSnips"]
+		" Q: Where to get snippets?
+		" A: One solution is install honza/vim-snippets which is widely used.
+		"
+		" Q: Do I need to install Ultisnips.
+		" A: No! This extension is designed to work with or without Ultisnips, you can still install Ultisnips, but this extension would not run any code or read configuration from it.
+		"
+		" can add settings: snippets.ultisnips.directories: [ "UltiSnips", "gosnippets/UltiSnips" ], to load it.
+		
 
 " Note: To install extensions with shell script, use command like:
 " install coc-json & coc-html and exit
@@ -933,10 +1225,10 @@ source $VIMHOME/keybindings.vim
 
 "buffer-local cd one level above current file's location.
 "For markdown previewer and netrw gx to work on joplin notes
-"from joplin/tmp folder
+"from joplin/tmp folder ( lcd ../<dir of current file>)
 autocmd FileType markdown,mkd
 	\  silent! lcd %:p:h
-	\| lcd ../
+	" \| lcd ../
 
 " autocmd BufRead,BufNewFile */joplin/**
 	" \  silent! lcd %:p:h
@@ -1009,12 +1301,6 @@ set nowritebackup
 "-----------------------------------------
 " Line {{{2
 "-----------------------------------------
-set wrap "causes vim to soft-wrap on the edge of the window.
-set linebreak "causes it to not break in the middle of a word, 
-	"but this will only work if the list setting is not enabled. Normally
-	"this isn’t a problem but if it’s not working you can :set nolist
-	"Recommended by: `pencil` plugin
-
 " Line length 
 "highlight column number X 
 set colorcolumn=80
@@ -1026,12 +1312,19 @@ highlight ColorColumn ctermbg=darkgray
 "	set colorcolumn=80
 "endif
 
+set showbreak=↪ " Show line wrapping
+set wrap "causes vim to soft-wrap on the edge of the window.
+set linebreak "causes it to not break in the middle of a word, 
+	"but this will only work if the list setting is not enabled. Normally
+	"this isn’t a problem but if it’s not working you can :set nolist
+	"Recommended by: `pencil` plugin
+
 "markdown rules
 "-----------------------------------------
 " 	Markdown specific line rules {{{3 
 "-----------------------------------------
 
-autocmd FileType markdown,mkd
+autocmd FileType markdown,mkd,pandoc
 	\  set colorcolumn=0
 
 "-----------------------------------------
