@@ -6,3 +6,6 @@ sudo apt install pandoc
 sudo apt-get install texlive
 sudo apt-get install texlive-latex-extra
 
+#for xcolor - for inline block color definition 
+
+sudo apt-get install texlive-latex-recommended 
