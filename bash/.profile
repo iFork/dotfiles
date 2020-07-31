@@ -51,3 +51,15 @@ fi
 
 
 
+# Read Manuals in vim
+export MANPAGER="/bin/sh -c \"col -b | vim -c 'set ft=man ts=8 nomod nolist nonu nornu noma' -\""
+# or per vim's :h man: `export MANPAGER="vim -M +MANPAGER -" `
+# credit: https://zameermanji.com/blog/2012/12/30/using-vim-as-manpager/
+# col utility to remove extra ^H (backspace) characters because they are not handled correctly by vim
+# ft=man enables the coloring of the man page.
+# ts=8 ensures the width of tab characters matches less.
+# nomod removes the modification warning when trying to quit.
+# nonu removes line numbers.
+# nolist disables listchars so trailing whitespace and extra tabs are not highlighted.
+# noma sets the buffer to not be modifiable.
+
