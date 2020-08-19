@@ -51,7 +51,7 @@ fi
 
 
 
-# Read Manuals in vim
+# Read Manuals in vim {{{1
 export MANPAGER="/bin/sh -c \"col -b | vim -c 'set ft=man ts=8 nomod nolist nonu nornu noma' -\""
 # or per vim's :h man: `export MANPAGER="vim -M +MANPAGER -" `
 # credit: https://zameermanji.com/blog/2012/12/30/using-vim-as-manpager/
@@ -62,4 +62,13 @@ export MANPAGER="/bin/sh -c \"col -b | vim -c 'set ft=man ts=8 nomod nolist nonu
 # nonu removes line numbers.
 # nolist disables listchars so trailing whitespace and extra tabs are not highlighted.
 # noma sets the buffer to not be modifiable.
+
+
+# Keyboard Custom Mappings / layout customization {{{1
+
+xmodmap ~/.xmodmap
+# Caps lock is mapped to Control_L (via xmodmap) and 
+# hitting it triggers Escape (after quick release)
+xcape -e 'Control_L=Escape' -t 300
+
 

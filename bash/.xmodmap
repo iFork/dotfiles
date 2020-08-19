@@ -1,0 +1,65 @@
+!
+! Intro {{{1
+! Usage: run `$ xmodmap ~/.xmodmap`
+! make a backup configuration, like so:
+! xmodmap -pke > ~/originalkeymap.xmod
+
+!
+! swap/change Caps_Lock with left Control {{{1
+!
+! credit: [x11 - Using xcape + xmodmap to change some keys - Unix & Linux Stack Exchange](https://unix.stackexchange.com/questions/158765/using-xcape-xmodmap-to-change-some-keys/163675#163675)
+
+
+! Caps as ctrl but ctrl_l is ctrl, no Caps
+!
+! remove Lock = Caps_Lock
+! remove Control = Control_L
+! keysym Caps_Lock = Control_L
+! add Lock = Caps_Lock
+! add Control = Control_L
+
+!
+! Swap Caps_Lock and Control_L
+! credit: manual and 
+! [Remap Caps Lock](http://wiki.c2.com/?RemapCapsLock)'
+!
+remove Lock = Caps_Lock
+remove Control = Control_L
+keysym Control_L = Caps_Lock
+keysym Caps_Lock = Control_L
+add Lock = Caps_Lock
+add Control = Control_L
+
+! disable Caps Lock (mapped to ctrl) altogether
+keysym Caps_Lock = NoSymbol
+!or 
+!keycode 37=
+
+! Not tested or problematic examples {{{1
+! -----------------------------------------
+
+! Caps is neither caps nor ctrl (seems to not work)
+!
+! remove Lock = Caps_Lock
+! keysym Caps_Lock = Control_L
+! add Lock = Caps_Lock  
+
+! change caps to control, remove caps
+!
+! clear Lock
+! keycode 0x7e = Control_R
+! add Control = Control_R
+!
+! Maybe you have to change the keycode 0x7e. You can find the keycodes with `xev`. I Furthermore, this only works if you don't have a right control key. I hope somebody has a
+
+! If you get stuck and find yourself without a control key use xev to find the keycode of your control and caps lock keys. Then use the following to restore the default config.
+!
+! remove Lock = Caps_Lock
+! remove Control = Control_L
+! keycode <keycodeofcontrol> = Control_L
+! keycode <keycodeofcapslock> = Caps_Lock
+! add Lock = Caps_Lock
+! add Control = Control_L
+
+
+

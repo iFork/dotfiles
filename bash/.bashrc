@@ -131,7 +131,7 @@ fi
 
 # npm command completion {{{1 
 
-# official version:
+# installation of official version:
 # source <(npm completion)
 
 # modified version. 
