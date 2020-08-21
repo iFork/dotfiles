@@ -81,8 +81,8 @@ endfunction
 nmap <leader>rn <Plug>(coc-rename)
 
 " Formatting selected code.
-xmap <leader>f  <Plug>(coc-format-selected)
-nmap <leader>f  <Plug>(coc-format-selected)
+xmap <leader><leader>f  <Plug>(coc-format-selected)
+nmap <leader><leader>f  <Plug>(coc-format-selected)
 
 augroup mygroup
   autocmd!
@@ -278,7 +278,7 @@ command! PlugHelp call fzf#run(fzf#wrap({
   \ 'sink':   function('s:plug_help_sink')}))
 
 "-----------------------------------------
-" 	Markdown {{{2 
+" Markdown {{{2 
 "-----------------------------------------
 
 "move by visual line, not actual line
@@ -287,7 +287,7 @@ autocmd FileType markdown,mkd
 	\| nnoremap k gk
 
 "-----------------------------------------
-" 	HTML {{{2 
+" HTML {{{2 
 "-----------------------------------------
 
 " Open HTML file in a browser {{{3
@@ -322,6 +322,13 @@ else
 endif
 endfun " }}} }}}
 
+
+"-----------------------------------------
+" My Custom mappings {{{1
+"-----------------------------------------
+
+" show current working directory (cwd)
+nmap <C-g><C-g> :pwd<CR>
 
 "-----------------------------------------
 " Customization Functions {{{1

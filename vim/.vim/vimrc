@@ -6,7 +6,7 @@ let $VIMHOME = $HOME."/.vim"
 let $MY_VIM_SCRIPTS = $VIMHOME."/my_scripts"	
 
 "########################################
-" Dependancy Setup Automation {{{1
+" Dependency Setup Automation {{{1
 "########################################
 
 " ----------------------------------------
@@ -242,7 +242,7 @@ Plug 'junegunn/limelight.vim' "Hyperfocus-writing
 	"Limelight! - turn off
 	"Limelight!! [0.0 ~ 1.0] - toggle
 
-" Plug 'junegunn/goyo.vim' "Distraction-free writing
+Plug 'junegunn/goyo.vim' "Distraction-free writing
 	" padding with margins
 	"Cheatlist:
 	" :Goyo // Toggle Goyo
@@ -497,6 +497,65 @@ Plug 'ternjs/tern_for_vim', { 'do': 'npm install' }
 	" 'tern' on our machine. In that case 'tagbar' maybe will not show
 	" improved JS tags without additional configuration.
 
+Plug 'baverman/vial' " python fw for plugins
+	" RequiredBy vial-http,
+Plug 'baverman/vial-http' " Simple http rest tool
+	" see: https://github.com/baverman/vial-http/tree/master/doc 
+	" Review: as compared with 'aquach/vim-http-client':
+		" - seems closer to HTTP request format, 
+		" - resp status is in status line
+		" - resp headers are in a buffer separate from body
+		" - both pretty-indent json in response
+		" - is tied to .http filetype and *highlights http syntax*,
+		"   while the vim-http-client is filetype-agnostic and its triggers 
+		"   work e.g. in .txt file and without http-syntax highlighting 
+	"disable vim-airline for windows with vial-http buffers to see status codes.
+	"Cheatlist:
+	" Write requests in file with *.http 
+	" Headers are collected from top of the file to the current request
+    " <leader><cr> executes request line under the cursor, :VialHttp 
+    " <c-k>/<c-j> cycle throw response/request/response headers windows
+	" Supports Templates
+
+" Plug 'aquach/vim-http-client' " make HTTP requests from Vim
+	" Dependency: python requests library.
+	" Cheatlist: 
+	" <Leader>tt , :HTTPClientDoRequest
+		" # Comments start with #.
+		" # $endpoint = http://httpbin.org //<-- Global vars
+		" # First request.
+		" # :foo = bar //<-- Local variable
+		" //<method> <url> <-- url should include Host, instead of separate
+								" Host header 
+		" GET $endpoint/get
+		" <header-name-1>: <header-value-1>
+		" ...
+		" <header-name-n>: <header-value-n>
+		" //<body>
+		" { "data": ":foo" } //<-- :foo was local var
+
+
+" Plug 'diepm/vim-rest-console'
+	":h vrc
+	" Review: 
+		" - has some network speed statistics line
+		" - seems to lack response status code, headers.
+		" - json body is not pretty-indented 
+	"Cheatlist:
+	" Set the buffer filetype to rest
+	" trigger key (<C-j>)
+
+		" global defaults above --
+		" --
+		" # host
+		" http[s]://domain[:port]
+		" [optional cUrl options]
+		" [optional headers]
+		" # query
+		" POST /path/to/resource
+		" [optional request body]
+
+
 
 " Meta Helpers ----- {{{3
 
@@ -521,6 +580,8 @@ endif
 "########################################
 " UI / Presentation / Visuals {{{1
 "########################################
+" TODO: move down - after plugin config ?
+
 "set number  "show row number
 set number relativenumber " Display relative numbers
 set cursorline " Enable highlighting of the current line
@@ -598,6 +659,10 @@ let python_highlight_all = 1
 autocmd FileType qf
 	\ set norelativenumber
 	\| set nospell
+
+" gitcommit messages window
+autocmd FileType gitcommit
+	\  set spell
 
 "-----------------------------------------
 " Filetypes / Compound ft w/ subtypes {{{3
@@ -780,6 +845,10 @@ let g:airline_section_z = airline#section#create_right(["%p%% : %l/%L \ue0a1 %c"
 
 " let g:airline_section_z = airline#section#create(['%{zoom#statusline()}'])
 
+"vial-http integration
+"disable vim-airline for windows with vial-http buffers:
+au WinEnter,BufWinEnter __vial_* let w:airline_disabled=1
+
 "Tip: read :h airline-advanced-customization
 	"'ffenc' is file format, encoding part. See airline-predefined-parts 
 
@@ -812,7 +881,7 @@ let g:airline_section_z = airline#section#create_right(["%p%% : %l/%L \ue0a1 %c"
 "markdown - bold, code block
 autocmd FileType markdown,mkd
 	\  let b:surround_{char2nr('8')} = "**\r**"
-	\| let b:surround_{char2nr('C')} = "```\r```"
+	\| let b:surround_{char2nr('c')} = "```\r```"
 "see also: https://stackoverflow.com/questions/47400961/surround-visual-text-with-more-than-1-character
 
 
@@ -995,7 +1064,7 @@ autocmd BufEnter * if (winnr("$") == 1 && exists("b:NERDTree")
 "-----------------------------------------
 " NERDTree-git-plugin / nerdtree-git-plugin {{{2
 "-----------------------------------------
-"NOTE: Dependancy:  vim couldn't execute system function in fish. Add set shell=sh in your vimrc.
+"NOTE: Dependency:  vim couldn't execute system function in fish. Add set shell=sh in your vimrc.
 
 "variable to change flag symbols
 let g:NERDTreeIndicatorMapCustom = {
@@ -1102,6 +1171,11 @@ let g:tagbar_type_css = {
 let g:UltiSnipsExpandTrigger="**"
 let g:UltiSnipsJumpForwardTrigger="<c-b>"
 let g:UltiSnipsJumpBackwardTrigger="<c-z>"
+
+" aquach/vim-http-client {{{2
+"-----------------------------------------
+let g:http_client_json_ft = "json" 
+		" default filetype for json response is javascript
 
 
 " coc configs  {{{2
@@ -1298,6 +1372,8 @@ set nowritebackup
 "########################################
 " Style and Formatting Rules {{{1
 "########################################
+" TODO: move up to UI section (before plugins config but after plugin inti) ?
+
 "-----------------------------------------
 " Line {{{2
 "-----------------------------------------
@@ -1319,11 +1395,16 @@ set linebreak "causes it to not break in the middle of a word,
 	"this isn’t a problem but if it’s not working you can :set nolist
 	"Recommended by: `pencil` plugin
 
-"markdown rules
+" 	gitcommit specific line rules {{{3 
 "-----------------------------------------
+autocmd FileType gitcommit
+	\  set colorcolumn=72
+" set textwidth=72
+
+" per tpope: On an 80 column terminal, if we subtract 4 columns for the indent on the left and 4 more for symmetry on the right, we’re left with 72 columns.
+
 " 	Markdown specific line rules {{{3 
 "-----------------------------------------
-
 autocmd FileType markdown,mkd,pandoc
 	\  set colorcolumn=0
 
@@ -1374,11 +1455,6 @@ set comments=sl:/**,mb:*,elx:*/ "comment format, start line, middle block, endli
 				"elx : command should end with */ and that it 
 				"should automatically complete the comment when you hit just /
 set formatoptions+=r  "auto-insert comment leader character
-
-
-"########################################
-" Language Specific Configs {{{1
-"########################################
 
 
 "########################################
