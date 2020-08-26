@@ -20,6 +20,13 @@ _darcs
 .+~          # emacs backup files
 \#.*\#       # emacs autosave files
 
+#vim tempo files
+.*\.swp
+.*\.swo
+
+# my backup folders for system defaults, etc.
+/backup/
+
 ^/README.*
 ^/LICENSE.*
 ^/COPYING
