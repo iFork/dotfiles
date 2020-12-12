@@ -1121,7 +1121,7 @@ au WinEnter,BufWinEnter __vial_* let w:airline_disabled=1
 "Check pandoc plugin conflict ?
 "
 "markdown - bold, code block
-autocmd FileType markdown,mkd
+autocmd FileType markdown,mkd,pandoc
 	\  let b:surround_{char2nr('8')} = "**\r**"
 	\| let b:surround_{char2nr('c')} = "```\r```"
 "see also: https://stackoverflow.com/questions/47400961/surround-visual-text-with-more-than-1-character
@@ -1164,6 +1164,19 @@ let g:tex_conceal = ""
 let g:vim_markdown_math = 1
 "Disabling conceal for code fences
 let g:vim_markdown_conceal_code_blocks = 0
+
+
+" Disable Vim Markdown specific folding configuration
+" to not interfere w pandoc folding, as concluded after debugging.
+" Debugging E490 No fold found: comparing output of 
+" `:so $VIMRUNTIME/bugreport.vim` for a) .md file opened and 
+" b) when a new buffer is created and ft is set to pandoc from scratch:
+"  a) (this works when ft remains markdown, not pandoc)
+"  foldexpr=Foldexpr_markdown(v:lnum)    
+"  b) (this is needed to folding to work when ft=pandoc)
+"  foldexpr=pandoc#folding#FoldExpr()
+
+let g:vim_markdown_folding_disabled = 1
 
 " `ge`: to follow named anchors
 let g:vim_markdown_follow_anchor = 1
@@ -1791,7 +1804,7 @@ autocmd FileType gitcommit
 " 	Markdown specific line rules {{{3 
 "-----------------------------------------
 autocmd FileType markdown,mkd,pandoc
-	\  set colorcolumn=0
+	\  setlocal colorcolumn=0
 
 "-----------------------------------------
 " Tabulations / Indention Rules {{{2
