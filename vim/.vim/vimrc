@@ -461,6 +461,7 @@ Plug 'junegunn/goyo.vim' "Distraction-free writing
 	" In percentage :Goyo 120x50%
 	" With offsets :Goyo 50%+25%x50%-25%
 " Markdown ----- {{{3
+" ---------------------
 " ***
 " * Note: some of markdown plugins sets foldcolumn=1, so left gutter becomes wider.
 " ***
@@ -558,16 +559,26 @@ Plug 'suan/vim-instant-markdown', {'for': 'markdown'}
 
 " Commenting ----- {{{3
 
-"Plug 'tpope/vim-commentary' "comment stuff out
-	"Cheatlist: gc<motion/object>, gcc<number> - line, gcgc - adjacent lines 
-	"ex command for toggling: Commentary
+Plug 'tomtom/tcomment_vim' " extensible & universal comment vim-plugin that
+				           " also handles embedded filetypes 
+	" Cheatlist:
+	" gc{motion}, gC{motion} - Toggle comments by line
+	" g>{motion} / g<{motion}  :: Comment / uncomment region
+    " g>c          :: Comment the current line
+    " g>b          :: Comment the current region as block
+	" Insert and normal mode maps
+	" <c-_><c-_>   :: :TComment
+    " <c-_><space> :: :TComment <QUERY COMMENT-BEGIN ?COMMENT-END>
+	" <c-_>b       :: :TCommentBlock
 
-Plug 'tpope/vim-commentary' " 
+" Plug 'tpope/vim-commentary' "comment stuff out
 	" supports in-JSX region commenting 
 	" as it respects commentstring changes within a file (e.g. by
 	" 'suy/vim-context-commentstring')
+	"Cheatlist: gc<motion/object>, gcc<number> - line, gcgc - adjacent lines 
+	"ex command for toggling: Commentary
 
-Plug 'preservim/nerdcommenter' "comment stuff out 
+" Plug 'preservim/nerdcommenter' "comment stuff out 
 				"see configs below
 	"Review: Comparing to tpope's vim-commentary - tpope's supports text objects
 	"natively, this nerd plugin needs a workaround like `vip`command
@@ -597,6 +608,28 @@ Plug 'suy/vim-context-commentstring'
 			" https://github.com/Arelav/vim-context-commentstring/commit/b9e09f3a390c2714ca52053fb97a81333b145e32
 			" clone and grep git history for commentstring
 
+
+" Documentation --- {{{3
+
+Plug 'heavenshell/vim-jsdoc', { 
+	\ 'for': ['javascript', 'javascript.jsx','typescript'], 
+	\ 'do': 'make install'
+	\}
+	" Documentation (like Doxygen): generates JSDoc block comments based on a function signature.
+	" link: <https://github.com/heavenshell/vim-jsdoc>
+	" Cheatlist:
+	" :JsDoc 
+		" Move cursor on function keyword line
+		" Type :JsDoc to insert JSDoc
+	" :JsDocFormat
+		" Type :JsDocFormat
+		" Insert JSDoc above the all signatures
+
+Plug 'kkoomen/vim-doge', { 'do': { -> doge#install() } } 
+	" (Do)cumentation (Ge)nerator 10+ languages
+	" Cheatlist: 
+	" <Leader>d , :DogeGenerate
+	" '<Tab>' , '<S-Tab>' - jumping
 
 " WebDev ----- {{{3 
 
@@ -1360,6 +1393,19 @@ let g:delimitMate_expand_cr = 2
 
 " Note: expand_cr was not working due to coc plugin's imap <cr> mapping as
 " found out " in report by :DelimitMateTest
+" 'kkoomen/vim-doge'--- {{{2
+
+" Defines the modes in which doge will jump forward and backward when
+" interactive mode is active
+" removing i would allow you to use <Tab> for autocompletion in insert mode.
+" let g:doge_comment_jump_modes = ['n', 'i', 's']
+
+" destructuring_props: Whether or not to generate @param tags for the
+" destructured properties in a function expression.
+let g:doge_javascript_settings = {
+\  'destructuring_props': 1,
+\}
+
 " coc configs  {{{2
 "-----------------------------------------
 	"See: keybindings.vim
