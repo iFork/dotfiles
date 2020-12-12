@@ -120,7 +120,43 @@ Plug 'preservim/nerdtree' "file system explorer / project drawer
 	"or put workaround functions from 
 	" https://stackoverflow.com/questions/4226905/vim-nerdtree-not-recovered-in-session-restore/42462073#42462073
 
+Plug 'tpope/vim-obsession' " continuously updated session files
+	" If I pass in a directory rather than a file name, just create a
+	" Session.vim inside of it. 
+	" Don't capture options and maps. Options are
+	" sometimes mutilated and maps just interfere with updating plugins.
+
+	" Use `:Obsess` (with optional file/directory name) to start recording to a
+	" session file and `:Obsess!` to stop and throw it away.  That's it.  Load a
+	" session in the usual manner: `vim -S`, or `:source` it.
+
+	" ISSUE: pausing (via :Obsession toggle) does not work, records anyway.
+
+" Plug 'dhruvasagar/vim-prosession' " switching between multiple sessions cleanly
+	" Dependency: 'tpope/vim-obsession'
+	" maintain one session per project (directory) and switch between them
+	" when we need to switch context, automatically
+
+	" `:Prosession` provides existing session paths from the sessions directory
+	" from `g:prosession_dir` (set to `~/.vim/session/` by default) or also
+	" completes paths from the file system which you can use to start new
+	" sessions for them.
+	" For more details check `:help prosession`.
+
+
+" TODO: Drop vim-seesion as it seems to always auto-save, despite I have not 
+" enables it, and not always restores what I expect to be saved in the session.
 Plug 'xolox/vim-session'  " Extended session management for Vim
+	"ISSUE:!ATTENTION! even 'options' is not saved in 'sessionoptions', plugin 
+	"**installation or removal or update does not play nicely with saved sessions**,
+	"calling deleted functions/mappings (e.g. w/ auto-pai baskspace) 
+	"or new added plugin's functions throw ERRORS.
+	"Reported : https://github.com/xolox/vim-session/issues/187
+	"
+	"ISSUE: when exiting not at once (i.e. not with :qa), only last window persists,
+	"despite autosave is diabled. 
+	" TO-Report ?
+	"
 	"Required: If you want NERDTree to not conflict with vim's 
 	"session loading (after mksession).
 	"Vim’s :mksession command isn’t really compatible with plug-ins that 
@@ -824,6 +860,11 @@ let g:one_allow_italics = 1
 let g:airline_powerline_fonts = 1
 let g:airline_section_x = '' "hide filetype  (vim)
 
+" vim-obsession integration
+" default was  active [$], paused [S], I reversed. 
+" 1st arg is for active, 2nd for paused
+let g:airline_section_x = '%{ObsessionStatus("S", "$")}' " _x was for filetype
+
 "vim-pencil integration
 " default indicators are:
 " let g:pencil#mode_indicators = {'hard': '␍', 'auto': 'ª', 'soft': '⤸', 'off': '',}"
@@ -1032,10 +1073,19 @@ let g:EasyMotion_use_smartsign_us = 1
 " xolox/vim-session {{{2
 "-----------------------------------------
 
-  " If you don't want help windows to be restored:
-  set sessionoptions-=help
-  " Don't save hidden and unloaded buffers in sessions.
-  set sessionoptions-=buffers
+" If you don't want help windows to be restored:
+set sessionoptions-=help
+" Don't save hidden and unloaded buffers in sessions.
+set sessionoptions-=buffers
+
+let g:session_autoload = 'no' " default was 'prompt'
+let g:session_autosave = 'no' " default was 'prompt'
+
+
+" type :Session<Tab> to get completion of all available commands (actually
+" this works with the other style as well if you type :*Session<Tab>)
+let g:session_command_aliases = 1
+
 
 
 "-----------------------------------------
