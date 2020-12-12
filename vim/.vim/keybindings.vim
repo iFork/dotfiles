@@ -234,6 +234,13 @@ map <Leader> <Plug>(easymotion-prefix)
 
 
 "-----------------------------------------
+" 'FooSoft/vim-argwrap' --- {{{2
+"-----------------------------------------
+" nnoremap <silent> gaw :ArgWrap<CR>
+nmap <silent> gA <Plug>(ArgWrapToggle)
+
+
+"-----------------------------------------
 " Filetype specific mappings {{{1
 "-----------------------------------------
 

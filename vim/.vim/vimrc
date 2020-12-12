@@ -406,6 +406,29 @@ Plug 'junegunn/vim-easy-align' " text alignment
 		" " Or more concisely with the shorthand notation;
 		" :EasyAlign/#/ig['String']
 
+Plug 'AndrewRadev/splitjoin.vim' " Switch between single-line and multiline 
+								 " forms of code
+	" Alternative: FooSoft/vim-argwrap/
+	" Pros: Has language specific awareness, like switching between single line,
+	" multi-line arrow functions in JS.
+	" Cheatlist:
+    " gS to split a one-liner into multiple lines
+    " gJ (cursor on first line of a block) to join a block into a single-line 
+
+" Plug 'FooSoft/vim-argwrap' " Wrap and unwrap function arguments, lists, and
+							 " dictionaries 
+	" Droped in favor of 'splitjoin' due to lack of language awareness ( arrow
+	" function reformating in JS)
+	" Alternative: AndrewRadev/splitjoin.vim
+	" Review: This has more formatting-related configs and is more
+	" consistent (eg. joining works from anywhere inside a block, as a result
+	" can collapse outer/parent blocks without going to the first line, as
+	" opposed to 'splitjoin' plugin, where join works only from the first line
+	" of the block).
+	" Cons: Has no language specific awareness, like single line, multi-line
+	" arrow functions in JS.
+	" I Mapped toggle to gA
+
 " Markdown ----- {{{3
 " ***
 " * Note: some of markdown plugins sets foldcolumn=1, so left gutter becomes wider.
