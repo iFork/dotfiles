@@ -33,6 +33,26 @@ nnoremap <F3> :NERDTreeFind<CR>
 	" while Konsloe terminal appepts Shift-F2 as such (but my konsole
 	"has problem diplaying bold text. //FIXME later 
 	
+"-----------------------------------------
+" undo tree --- {{{3
+"-----------------------------------------
+"
+" 'sjl/gundo.vim' --- {{{4
+"-----------------------------------------
+" toggle undo tree
+" nnoremap <F4> :GundoToggle<CR>
+
+" 'simnalamburt/vim-mundo'  --- {{{4
+"-----------------------------------------
+" toggle undo tree
+nnoremap <F5> :MundoToggle<CR>
+ 
+" 'mbbill/undotree' --- {{{4
+"-----------------------------------------
+" toggle undo tree
+" nnoremap <F4> :UndotreeToggle<cr>
+
+"-----------------------------------------
 " coc-plugin {{{2
 "-----------------------------------------
 

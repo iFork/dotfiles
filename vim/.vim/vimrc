@@ -779,7 +779,30 @@ Plug 'liuchengxu/vim-which-key' " shows keybindings in popup
 " set timeoutlen=500
 " TODO: To configure - The dictionary configuration is necessary to provide group names or a description text.
 
+" Plug 'sjl/gundo.vim' " Graph your Vim undo tree, visualization
+	" [Gundo - Visualize your Vim Undo Tree](https://docs.stevelosh.com/gundo.vim/)
+	" Dependency:  Gundo requires Vim 7.3+ compiled with Python support, and Python 2.4+
+	" CONS: its issue tracker on has gone, is not maintained
+	"
 
+Plug 'simnalamburt/vim-mundo' " undo tree / history visualizer  
+	" [Mundo - Visualize your Vim Undo Tree](https://simnalamburt.github.io/vim-mundo/)
+	" active fork of gundo
+	" Dependency: `+python3` or `+python` compile option, Python > 2.4
+	" Review: `undotree` had some features `gundo` didn't and it looks like `mundo` now copied them.
+	" Seems like it offers more than `undotree`, e.g.:
+	" - search undo history, more diff options (while `undotree` has diff integrated 
+	" main buffer's gutter) 
+
+" Plug 'mbbill/undotree' " undo tree / history visualizer 
+	" LOG: disabled after vim SEGFAULT error (of yet unknown offender) 
+	" happened after simple undo.
+	" NOTE: BUT Rule of Thumb for debugging is to first disable non-VimL
+	" plugins, in this case 'vim-mundo' better fits the bill as it is python
+	" plugin.
+
+Plug 'junegunn/vim-peekaboo' " see registers on the fly
+	" extends " and @ in normal mode and <CTRL-R> in insert mode so you can see the contents of the registers
 
 " (..initialize plugin system, endif) {{{3
 call plug#end()
@@ -1409,6 +1432,16 @@ let g:UltiSnipsJumpBackwardTrigger="<c-z>"
 let g:http_client_json_ft = "json" 
 		" default filetype for json response is javascript
 
+
+" 'sjl/gundo.vim'  {{{2
+"-----------------------------------------
+
+" Issue: without following gundo complains that it needs python 2.4
+" credit: [Gundo plugin requires python 2.4 when version 2.7 is installed - Vi and Vim Stack Exchange](https://vi.stackexchange.com/questions/6558/gundo-plugin-requires-python-2-4-when-version-2-7-is-installed)
+
+" if has('python3')
+"     let g:gundo_prefer_python3 = 1
+" endif
 
 
 " 'Raimondi/delimitMate'--- {{{2
