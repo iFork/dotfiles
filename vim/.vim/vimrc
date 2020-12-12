@@ -97,7 +97,6 @@ Plug 'blueshirts/darcula' "InteliJ
 " General ----- {{{3
 
 Plug 'vim-airline/vim-airline' 	 " statusline
-Plug 'tpope/vim-fugitive' "git wrapper
 Plug 'tpope/vim-eunuch' "Helpers for UNIX / Linux commands wrapper
 Plug 'tpope/vim-repeat' "Enable repeating supported plugin maps with '.'
 		" e.g. for easymotion
@@ -187,6 +186,32 @@ endif
 Plug 'wakatime/vim-wakatime' "Time tracker, Productivity monitoring
 	" :WakaTimeToday - echo your total coding activity for Today
 	" dashboard: <https://wakatime.com/dashboard>
+
+
+" git ----- {{{3
+Plug 'tpope/vim-fugitive' "git wrapper
+Plug 'airblade/vim-gitgutter' " sign column for git diffs
+	" Cheatlist: :GitGutterEnable
+	" Hunks
+	" [c ]c 
+	" stage the hunk with <Leader>hs, or undo it with <Leader>hu
+	" hunk text object: ic, ac
+
+Plug 'junegunn/gv.vim' " git commit browser
+	" Alternative: 
+		" > gitv is nice. But per author, this is faster, and possibly simpler alternative 
+	" Dependency: 'vim-fugitive'
+	" Cheatlist:
+    " :GV to open commit browser
+    "     You can pass git log options, e.g. :GV -S foobar.
+    " :GV! only list commits that affected the current file
+    " :GV? fills the location list with the revisions of the current file
+	" :GV or :GV? can be used in visual mode to track the changes in the selected lines.
+	" maps
+	" o or <cr> on commits to display the diff in the range
+	" O - new tab
+	" gb for :Gbrowse
+	" ]] and [[ to move
 
 
 " Language semantics ----- {{{3
