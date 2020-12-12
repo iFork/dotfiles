@@ -66,13 +66,5 @@ export MANPAGER="vim -c \"Man $1 $2\" -c 'silent only'"
 # nolist disables listchars so trailing whitespace and extra tabs are not highlighted.
 # noma sets the buffer to not be modifiable.
 
-
-# Keyboard Custom Mappings / layout customization {{{1
-
-xmodmap ~/.xmodmap
-# Caps lock is mapped to Control_L (via xmodmap) and 
-# hitting it triggers Escape (after quick release)
-xcape -e 'Control_L=Escape' -t 300
-
 # or per vim's :h man: `export MANPAGER="vim -M +MANPAGER -" `
 

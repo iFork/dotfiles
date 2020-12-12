@@ -3,6 +3,14 @@
 ! Usage: run `$ xmodmap ~/.xmodmap`
 ! make a backup configuration, like so:
 ! xmodmap -pke > ~/originalkeymap.xmod
+! CLI example:
+! xmodmap -e "keysym Caps_Lock = NoSymbol"
+
+! Loading config on startup {{{2
+! credit: [linux - Why won't my xmodmap command run on startup/login? - Super User](https://superuser.com/questions/185345/why-wont-my-xmodmap-command-run-on-startup-login)
+! ~/.profile runs early in the login sequence. If your desktop environment configures a keyboard layout, it can overwrite the settings you've just loaded.
+! Put your settings in a file called ~/.Xmodmap:
+! Under the default Gnome environment in Ubuntu 10.04, the next time you log in, you will be prompted as to whether to load ~/.Xmodmap. Load it, and tick “don't ask me again”. Then your .Xmodmap will be applied after the default settings.
 
 !
 ! swap/change Caps_Lock with left Control {{{1
@@ -25,13 +33,20 @@
 !
 remove Lock = Caps_Lock
 remove Control = Control_L
-keysym Control_L = Caps_Lock
+!		^ removing RHS keysym from a LHS modifier-key-map
+! keysym Control_L = Caps_Lock
+!		^ to swap, assigning RHS keysym to a keycode found by reolving LHS keysym
+keysym Control_L = NoSymbol
+!		^ to disable Caps lock naw mapped to Control_L
 keysym Caps_Lock = Control_L
-add Lock = Caps_Lock
+! add Lock = Caps_Lock
+!		^ to swap 
 add Control = Control_L
 
 ! disable Caps Lock (mapped to ctrl) altogether
-keysym Caps_Lock = NoSymbol
+! after config is sourced as during sourcing all keysyms 
+! are evaluated at the begining:
+!keysym Caps_Lock = NoSymbol 
 !or 
 !keycode 37=
 
@@ -52,7 +67,7 @@ keysym Caps_Lock = NoSymbol
 !
 ! Maybe you have to change the keycode 0x7e. You can find the keycodes with `xev`. I Furthermore, this only works if you don't have a right control key. I hope somebody has a
 
-! If you get stuck and find yourself without a control key use xev to find the keycode of your control and caps lock keys. Then use the following to restore the default config.
+! If you get stuck and find yourself without a control key use `xev` to find the keycode of your control and caps lock keys. Then use the following to restore the default config.
 !
 ! remove Lock = Caps_Lock
 ! remove Control = Control_L
@@ -61,5 +76,7 @@ keysym Caps_Lock = NoSymbol
 ! add Lock = Caps_Lock
 ! add Control = Control_L
 
-
+! References {{{1
+! [xmodmap - ArchWiki](https://wiki.archlinux.org/index.php/Xmodmap)
+! [Xorg/Keyboard configuration - ArchWiki](https://wiki.archlinux.org/index.php/Xorg/Keyboard_configuration)
 
