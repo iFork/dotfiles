@@ -1,5 +1,6 @@
 {
-    //is this necessary for coc-clangd to work ?? :CocRestart to check
+    // clangd config
+	//is this necessary for coc-clangd to work ?? :CocRestart to check
     //"languageserver": {
     //      "clangd": {
     //          "enable": true,
@@ -10,5 +11,18 @@
     //      }
     // },
     //required by vim-lsp-cxx-highlight
-    "clangd.semanticHighlighting": true
+    "clangd.semanticHighlighting": true,
+	
+	//eslint config
+	"eslint.trace.server": "verbose", // for debugging
+	"eslint.packageManager": "npm", // has effect only when eslint is resolved globally 
+	"eslint.codeAction.disableRuleComment": {
+		// show disable lint rule in the quick fix menu
+		"enable": true, // TO disable
+		"location": "separateLine"
+	},
+	"eslint.codeAction.showDocumentation": {
+		// show open lint rule documentation web page in the quick fix
+		"enable": true
+	}
 }

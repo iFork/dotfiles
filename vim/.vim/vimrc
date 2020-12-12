@@ -1563,9 +1563,9 @@ let g:coc_global_extensions = ['coc-json'
 				\, 'coc-tsserver'
 				\, 'coc-css'
 				\, 'coc-ultisnips'
+				\, 'coc-eslint'
 				\, 'coc-jest'
 				\ ]
-				" \, 'coc-eslint'
 				" \, 'coc-prettier'
 				" \, 'coc-html'
 				" \, 'coc-ultisnips', 'coc-emmet'
@@ -1577,6 +1577,29 @@ let g:coc_global_extensions = ['coc-json'
 
 		" coc-tsserver: 
 		" for javascript project, configure jsconfig.json to make tsserver understand your code.
+
+		" TODO: configure tsserver linting/style rules to not duplicate that
+		" of eslint (or vice versa). Example: sometimes tsserver and eslint
+		" overlap on 'no-unused-var' rule and both provide codeActions.
+		" However **tsserver** seems to be more
+		" sensitive to this error and reports more specifically (e.g. not
+		" read, not used) in more cases and provides more codeActions (i.e.
+		" prefix with '_'). So **tsserver** fares better than eslint in this
+		" respect. 
+
+		" 'coc-eslint' 
+		" " Dependency: npx eslint, local or global
+		" (for global may need `eslint.nodePath` setting), also
+		" related/peer plugins may be picky about that.
+		" 
+		" Cheatlist: use codeAction mappings
+		" particularly \a<motion> as \ac (on all line) gives only codeActions 
+		" from tsserver.
+		" or `:CocCommand eslint.executeAutofix`
+		"
+		" Issue: reported - [Missing floating box for a 'comma-dangle' error message · Issue #73 · neoclide/coc-eslint](https://github.com/neoclide/coc-eslint/issues/73)
+		" Past Resolved Issues: 
+		" reported [CodeAction not found. Cannot read property 'range' of undefined · Issue #69 · neoclide/coc-eslint](https://github.com/neoclide/coc-eslint/issues/69)
 
 		" coc-ultisnips
 		" link: https://github.com/neoclide/coc-sources
