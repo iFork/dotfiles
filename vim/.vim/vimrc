@@ -330,6 +330,31 @@ Plug 'tpope/vim-surround'  " parentheses, brackets, quotes, XML tags, and more
 	"ds<old> -- delete 
 	"Using the f surrounding prompts for a function name.  ysiWfbaz<cr>
 	"in Visual mode: S<p some tag details> 
+	"in insert mode: <C-s><new>
+
+" Plug 'jiangmiao/auto-pairs' " insert or delete brackets, parens, quotes in pair
+	" ISSUE: autocompletion inside an arg object right below 
+	" func block opening brace - inserts selected autocomplete but also
+	" inserts a line above current line and goes there. e.g.
+	" mongoose.Schema({
+		" name: {type: String, require|} //<- if autocompleted will add a line above
+	" }) 
+	" ISSUE: backspace issue in viml comment
+	" [Strange backspace behavior · Issue #272 · jiangmiao/auto-pairs](https://github.com/jiangmiao/auto-pairs/issues/272)
+	" TODO: try workarounds or try DelimMate plugin !!!
+
+Plug 'Raimondi/delimitMate' " insert mode auto-completion for quotes, parens,
+							" brackets in pairs.
+	" Review: seems smarter / more faultless, more fine grained configs than
+	" 'jiangmiao/auto-pairs' 
+	"Cheatlist:
+	" <S-Tab> jump over a single closing delimiter or quote
+	"	ISSUE: <S-Tab> acts as <backspace> in insert mode, "	probably due
+	"	to remapping for coc.
+	"	change those mappings or `imap <C-K> <Plug>delimitMateS-Tab`
+
+	" <C-G>g jump over contiguous delimiters and/or quotes.
+
 
 Plug 'tpope/vim-abolish' " search for, substitute, and abbreviate multiple variants of a word
 			" variants may be uppercase / lower-case 
@@ -1253,6 +1278,28 @@ let g:http_client_json_ft = "json"
 		" default filetype for json response is javascript
 
 
+
+" 'Raimondi/delimitMate'--- {{{2
+" --------------------------------
+" :h delimitMateExpansion
+" NOTE: run :DelimitMateTest to find out mapping and other conflicts interfering
+" with this plugin.
+
+let g:delimitMate_expand_space = 1
+
+" Influences the working of <BS>, <Del>, CTRL-W and CTRL-U in Insert
+	" eol	allow backspacing over line breaks (join lines)
+	" start	allow backspacing over the start of insert; CTRL-W and CTRL-U
+	" 	stop once at the start of insert.
+	" RequiredBy: DelimMate's delimitMate_expand_cr option to work
+set backspace=indent,eol,start
+
+" NOTE This feature requires that 'backspace' is either set to 2 or has "eol"
+" and "start" as part of its value.
+let g:delimitMate_expand_cr = 2
+
+" Note: expand_cr was not working due to coc plugin's imap <cr> mapping as
+" found out " in report by :DelimitMateTest
 " coc configs  {{{2
 "-----------------------------------------
 	"See: keybindings.vim

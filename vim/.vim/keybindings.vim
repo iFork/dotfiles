@@ -29,7 +29,12 @@ inoremap <silent><expr> <TAB>
       \ pumvisible() ? "\<C-n>" :
       \ <SID>check_back_space() ? "\<TAB>" :
       \ coc#refresh()
-inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
+" inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
+" Fixing 'delimitMate' plugin's <S-Tab> mapping to work with coc
+	" This does Not help -> imap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+	" despite <S-tab> in delimitMate.vim is `imap` not `inoremap`
+	" But following works: e.g. jumps out of `(|)`:
+imap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<Plug>delimitMateS-Tab"
 
 function! s:check_back_space() abort
   let col = col('.') - 1
@@ -47,12 +52,31 @@ inoremap <silent><expr> <c-space> coc#refresh()
 "Error w/ c-r was Fixed by vim upgrade 
 " Use <cr> to confirm completion, `<C-g>u` means break undo chain at current
 " position. Coc only does snippet and additional edit on confirm.
-if has('patch8.1.1068')
-  " Use `complete_info` if your (Neo)Vim version supports it.
-  inoremap <expr> <cr> complete_info()["selected"] != "-1" ? "\<C-y>" : "\<C-g>u\<CR>"
-else
-  imap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
-endif
+
+" NOTE: following Fixes interference with  'Raimondi/delimitMate'
+" delimitMate_expand_cr feature (going to a new line between braces after
+" <cr>) with coc as found out in report by :DelimitMateTest
+" Alternative: use vim native ins-completion maps <c-y> (yes) or <c-e> (end) 
+"
+" if has('patch8.1.1068')
+"	" ISSUE: Disabled this if block since after vim update and plugin updates 
+"	" <CR> does not act reliably when an entry is selected from the pum (popup
+"	" menue) sometimes insidee expanded snippet.
+"
+"   " Use `complete_info` if your (Neo)Vim version supports it.
+"   " inoremap <expr> <cr> complete_info()["selected"] != "-1" ? "\<C-y>" : "\<C-g>u\<CR>"
+"   " Note: Use `imap` instead of `inoremap` to further evaluate mapping in
+"   " returned expression (for <Plug>delimitMateCR)
+"   imap <expr> <cr> complete_info()["selected"] != "-1" 
+" 	\ ? "\<C-y>" 
+" 	\ : "\<C-g>u\<Plug>delimitMateCR"
+" else
+  " imap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
+  imap <expr> <cr> pumvisible() 
+	\ ? "\<C-y>" 
+	\ : "\<C-g>u\<Plug>delimitMateCR"
+" endif
+
 " Use <cr> to confirm completion, `<C-g>u` means break undo chain at current
 " position. Coc only does snippet and additional edit on confirm.
 
