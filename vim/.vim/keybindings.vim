@@ -20,6 +20,19 @@
 " Plugin Mappings--- {{{1
 "-----------------------------------------
 
+"-----------------------------------------
+" NERDTree plugin {{{3
+"-----------------------------------------
+"nnoremap <C-n> :NERDTreeToggle<CR>
+"nnoremap <S-N> :NERDTreeFocus<CR>
+"nnoremap <S-N> :NERDTreeFind<CR>
+nnoremap <F2> :NERDTreeToggle<CR>
+nnoremap <F3> :NERDTreeFind<CR> 
+	"Gnome and similar terminals confuse <S-F2> (-F3/F4 .. but not Shift-F8 )
+	" with Q which enters ex mode, 
+	" while Konsloe terminal appepts Shift-F2 as such (but my konsole
+	"has problem diplaying bold text. //FIXME later 
+	
 " coc-plugin {{{2
 "-----------------------------------------
 
@@ -177,29 +190,22 @@ nnoremap <silent> <space>k  :<C-u>CocPrev<CR>
 " Resume latest coc list.
 nnoremap <silent> <space>p  :<C-u>CocListResume<CR>
 
+" coc-extension commands {{{3
+"-----------------------------------------
 
+" 'coc-jest' {{{4
 
-"-----------------------------------------
-" NERDTree plugin {{{2
-"-----------------------------------------
-"nnoremap <C-n> :NERDTreeToggle<CR>
-"nnoremap <S-N> :NERDTreeFocus<CR>
-"nnoremap <S-N> :NERDTreeFind<CR>
-nnoremap <F2> :NERDTreeToggle<CR>
-nnoremap <F3> :NERDTreeFind<CR> 
-	"Gnome and similar terminals confuse <S-F2> (-F3/F4 .. but not Shift-F8 )
-	" with Q which enters ex mode, 
-	" while Konsloe terminal appepts Shift-F2 as such (but my konsole
-	"has problem diplaying bold text. //FIXME later 
-	
+" Run jest for current project
+command! -nargs=0 Jest :call  CocAction('runCommand', 'jest.projectTest')
 
-"-----------------------------------------
-" Tagbar plugin {{{2
-"-----------------------------------------
-nnoremap <F8> :TagbarToggle<CR>
-nnoremap <S-F8> :TagbarOpen fj<CR> 
-	"focus when opening and jump when open
-	
+" Run jest for current file
+command! -nargs=0 JestCurrent :call  CocAction('runCommand', 'jest.fileTest', ['%'])
+
+" Run jest for current test
+nnoremap <leader>te :call CocAction('runCommand', 'jest.singleTest')<CR>
+
+" Init jest in current cwd, require global jest command exists
+" command! JestInit :call CocAction('runCommand', 'jest.init')
 
 "-----------------------------------------
 " vim-easy-align {{{2

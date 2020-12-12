@@ -651,6 +651,26 @@ Plug 'kkoomen/vim-doge', { 'do': { -> doge#install() } }
 	" <Leader>d , :DogeGenerate
 	" '<Tab>' , '<S-Tab>' - jumping
 
+
+" Runners, Testing, Build --- {{{3
+
+Plug 'tpope/vim-dispatch' " Asynchronous build and test dispatcher 
+	" Leverage the power of Vim's compiler plugins
+	" :Make - dispatch.vim's `:make` wrapper
+	" :Make! - for longer running tasks
+	" :Copen
+	" Compiler
+	" default build tool is `make`, but you can switch it (and the
+	" associated error parser) with `:compiler`.
+	" `:Dispatch` command looks for a compiler for an executable and sets it up automatically.
+		" :Dispatch testrb test/models/user_test.rb
+	" If no compiler plugin is found, `:Dispatch` simply captures all output.
+
+Plug 'vim-test/vim-test' " Run your tests
+	" Dependency: dispatch.vim
+	" :TestNearest :TestFile :TestSuite :TestLast
+	" :TestVisit - Visits the test file from which you last run your tests 
+
 " WebDev ----- {{{3 
 
 " Plug 'tmhedberg/matchit' " extended % matching for HTML, LaTeX,
@@ -691,7 +711,7 @@ Plug 'ternjs/tern_for_vim', { 'do': 'npm install' }
 	" improved JS tags without additional configuration.
 
 Plug 'baverman/vial' " python fw for plugins
-	" RequiredBy vial-http,
+	" RequiredBy: vial-http,
 Plug 'baverman/vial-http' " Simple http rest tool
 	" see: https://github.com/baverman/vial-http/tree/master/doc 
 	" Review: as compared with 'aquach/vim-http-client':
@@ -705,6 +725,8 @@ Plug 'baverman/vial-http' " Simple http rest tool
 	"disable vim-airline for windows with vial-http buffers to see status codes.
 	"Cheatlist:
 	" Write requests in file with *.http 
+	" Body should be in JSON format, i.e. double-quoted (not sigle quote),
+	" no trailing comma, etc.
 	" Headers are collected from top of the file to the current request
     " <leader><cr> executes request line under the cursor, :VialHttp 
     " <c-k>/<c-j> cycle throw response/request/response headers windows
@@ -749,6 +771,17 @@ Plug 'baverman/vial-http' " Simple http rest tool
 		" [optional request body]
 
 
+
+" DB /DataBases ----- {{{3
+" TODO: TO-TRY
+Plug 'tpope/vim-dadbod' " Modern database interface
+" [tpope/vim-dadbod: dadbod.vim: Modern database interface for Vim](https://github.com/tpope/vim-dadbod)
+
+" TODO: add and config with vim-dotenv
+
+Plug 'kristijanhusak/vim-dadbod-ui' " UI for vim-dadbod
+" [kristijanhusak/vim-dadbod-ui: Simple UI for https://github.com/tpope/vim-dadbod](https://github.com/kristijanhusak/vim-dadbod-ui)
+"
 
 " Meta Helpers ----- {{{3
 
@@ -1413,6 +1446,45 @@ let g:delimitMate_expand_cr = 2
 
 " Note: expand_cr was not working due to coc plugin's imap <cr> mapping as
 " found out " in report by :DelimitMateTest
+
+" 'vim-test/vim-test' {{{2
+
+" Run strategy:
+" vimterminal
+" dispatch / dispatch_background  - Runs test commands with :Dispatch or :Dispatch!.
+" let test#strategy = "dispatch"
+let test#strategy = {
+  \ 'nearest': 'vimterminal',
+  \ 'file':    'dispatch',
+  \ 'suite':   'basic',
+\}
+
+" let g:test#preserve_screen = 1
+
+" Runners:
+" JavaScript : Test runner detection works by checking which runner is listed
+" in the package.json dependencies. When you have multiple runners listed in
+" the package.json, specify a runner
+" let g:test#javascript#runner = 'jest'
+
+" All runners are loaded by default. To select which runners to load, set this
+let test#enabled_runners = ["javascript#jest"]
+
+" Compilers:
+" TODO: As Dispatch.vim just determines the compiler, you need to make sure
+" the Vim distribution or a plugin has a corresponding compiler for your test
+" runner, or you may need to write a compiler plugin.
+" See let g:dispatch_compilers[...] = ..
+
+" jest
+" `jest-vim-reporter`
+" strips down most of the output for use with make or vim-test and the
+" quickfix window.
+" Dependency:, `npm install --save-dev jest-vim-reporter`
+" global install gave error: `npm install -g jest-vim-reporter` 
+let g:test#javascript#jest#options = '--reporters jest-vim-reporter'
+
+
 " 'kkoomen/vim-doge'--- {{{2
 
 " Defines the modes in which doge will jump forward and backward when
@@ -1472,6 +1544,7 @@ let g:coc_global_extensions = ['coc-json'
 				\, 'coc-tsserver'
 				\, 'coc-css'
 				\, 'coc-ultisnips'
+				\, 'coc-jest'
 				\ ]
 				" \, 'coc-eslint'
 				" \, 'coc-prettier'
@@ -1504,6 +1577,9 @@ let g:coc_global_extensions = ['coc-json'
 		"
 		" can add settings: snippets.ultisnips.directories: [ "UltiSnips", "gosnippets/UltiSnips" ], to load it.
 		
+		" coc-jest
+		" ( close to, more specialized than 'vim-test/vim-test' plugin)
+
 
 " Note: To install extensions with shell script, use command like:
 " install coc-json & coc-html and exit
