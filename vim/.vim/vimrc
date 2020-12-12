@@ -460,6 +460,26 @@ Plug 'junegunn/goyo.vim' "Distraction-free writing
 	"  Width  :Goyo 120 // Height  :Goyo x30 // Both :Goyo 120x30
 	" In percentage :Goyo 120x50%
 	" With offsets :Goyo 50%+25%x50%-25%
+
+Plug 'vim-utils/vim-man'  " View and grep man pages 
+	" h: vim-man
+	" Cheatlist:
+	" `[[` and `]]` - jump to prev/next section heading
+	" `Ctrl-]` / `K` , `Ctrl-T` -  going to manpage for word and jumping back
+	" `g/` - start option search (example `--quiet` or `-q`)
+	" `gx`,  `gf` 
+	" `q` - quit `vim-man` buffer
+
+	" :Mangrep foobar - same as :Mangrep 1 foobar (grepping in section 1 manpages)
+	" :Mangrep * foobar - force search *all* man sections
+	" :Mangrep -i 6 foobar - case insensitive search
+	" :Mangrep 6 '(foo|bar|baz)' - regex search (Mangrep uses grep -E), 
+
+	" ISSUE:
+	" If you have vanilla vim the command will *block* and make vim unusable
+	" until done (and it can take a while).
+	" Installing vim-dispatch is recommended.
+
 " Markdown ----- {{{3
 " ---------------------
 " ***
