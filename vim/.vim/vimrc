@@ -3,7 +3,8 @@
 "
 " Important vars {{{1
 let $VIMHOME = $HOME."/.vim"
-let $MY_VIM_SCRIPTS = $VIMHOME."/my_scripts"	
+" let $MY_VIM_SCRIPTS = $VIMHOME."/my_scripts"	
+let $MY_VIM_SCRIPTS = $HOME."/dotfiles/bootstrap/vim"	
 
 "########################################
 " Dependency Setup Automation {{{1
@@ -220,6 +221,7 @@ Plug 'majutsushi/tagbar' "sidebar that displays the ctags-generated
 			"tags of the current file, ordered by their scop
 			"Dependency: ctags. recommended is universal-ctags.
 			" https://github.com/universal-ctags/ctags/blob/master/docs/autotools.rst 
+
 "Intellisense engine like VSCode, Language Server Protocol - Client
 Plug 'neoclide/coc.nvim', {'do': function('Coc_plugin_setup'), 'branch': 'release' } 
 
@@ -293,29 +295,27 @@ Plug 'vim-voom/VOoM' " Vim Outliner of Markups  emulates a two-pane text outline
 	"main Ex commands: Voom, Voomhelp, Voomexec, Voomlog.
 	"for help: Voomhelp , :h voom-quickstart
 
-" Reading ----- {{{3
-
-Plug 'junegunn/limelight.vim' "Hyperfocus-writing
-	" dimms other paragraphs/lines
-	" Best served with Goyo.vim plugin 
-	"Cheatlist:
-	"Limelight [0.0 ~ 1.0] // transparency factor 
-	"Limelight! - turn off
-	"Limelight!! [0.0 ~ 1.0] - toggle
-
-Plug 'junegunn/goyo.vim' "Distraction-free writing
-	" padding with margins
-	"Cheatlist:
-	" :Goyo // Toggle Goyo
-	" :Goyo [dimension]  // Turn on or resize Goyo
-	"  Width  :Goyo 120 // Height  :Goyo x30 // Both :Goyo 120x30
-	" In percentage :Goyo 120x50%
-	" With offsets :Goyo 50%+25%x50%-25%
-
 " Text work ------ {{{3
 
 " Snippets
 Plug 'SirVer/ultisnips' " Snippets engine 
+	" ISSUE: Snippets starting with special characters, like `=` or `;` do not
+	" expand. This happens when completion is handled by **coc** plugin and
+	" **coc-ultisnips** extension. Particularly, <tab> to list options and <enter>
+	" to expand on selected. 
+	" Related issue (thow reported on coc-snippets, not coc-ultisnips, which 
+	" I use): [Snippets starting with special characters not triggered. · Issue #10 · neoclide/coc-snippets](https://github.com/neoclide/coc-snippets/issues/10)
+	" > snippet completion only triggered with word character for now, you can
+	" trigger it by use trigger key.
+	"
+	" Workaround: use ultisnips’ trigger ( `**`, UltiSnipsExpandTrigger) directly to
+	" expand snippets which begin with such symbols. 
+	" TODO: Or try coc-snippets (w/ ultisnips plugin) instead of coc-ultisnips 
+	" as an answer to above issue hints that expansion may work also when
+	" coc's trigger (<tab>) is used
+
+
+
 " Plug 'honza/vim-snippets' " Snippet source, replaced with
 							" my fork 
 Plug 'iFork/vim-snippets' " my fork of 'honza/vim-snippets' 
@@ -371,6 +371,9 @@ Plug 'tpope/vim-abolish' " search for, substitute, and abbreviate multiple varia
 	"for common spelling error corrections 
 	"following one command produces 48 abbreviations including all of the above.
 	":Abolish {despa,sepe}rat{e,es,ed,ing,ely,ion,ions,or}  {despe,sepa}rat{}
+
+" Format / Style ----- {{{3
+" ---------------------------
 
 Plug 'godlygeek/tabular' "text filtering and alignment
 			"RequiredBy: 'vim-markdown'
@@ -429,6 +432,34 @@ Plug 'AndrewRadev/splitjoin.vim' " Switch between single-line and multiline
 	" arrow functions in JS.
 	" I Mapped toggle to gA
 
+" Reading ----- {{{3
+" --------------------
+
+Plug 'wellle/context.vim' " shows context of currently visible buffer contents 
+	" It is based on indentation and some regular expressions.
+	"Cheatlist:
+	" use :ContextEnable or :ContextToggle to enable it on demand.
+	" :ContextEnableWindow,:ContextDisableWindow - only affects the current window.
+	" :ContextDisable
+	" :ContextPeek 
+
+
+Plug 'junegunn/limelight.vim' "Hyperfocus-writing
+	" dimms other paragraphs/lines
+	" Best served with Goyo.vim plugin 
+	"Cheatlist:
+	"Limelight [0.0 ~ 1.0] // transparency factor 
+	"Limelight! - turn off
+	"Limelight!! [0.0 ~ 1.0] - toggle
+
+Plug 'junegunn/goyo.vim' "Distraction-free writing
+	" padding with margins
+	"Cheatlist:
+	" :Goyo // Toggle Goyo
+	" :Goyo [dimension]  // Turn on or resize Goyo
+	"  Width  :Goyo 120 // Height  :Goyo x30 // Both :Goyo 120x30
+	" In percentage :Goyo 120x50%
+	" With offsets :Goyo 50%+25%x50%-25%
 " Markdown ----- {{{3
 " ***
 " * Note: some of markdown plugins sets foldcolumn=1, so left gutter becomes wider.
@@ -773,6 +804,8 @@ autocmd FileType qf
 autocmd FileType gitcommit
 	\  set spell
 
+autocmd FileType git,fugitiveblame,GV
+	\  set nospell
 "-----------------------------------------
 " Filetypes / Compound ft w/ subtypes {{{3
 "-----------------------------------------
@@ -827,7 +860,7 @@ set listchars+=space:␣ " for space
 "-----------------------------------------
 " Code folding settings {{{2
 "-----------------------------------------
-set foldmethod=syntax " fold based on indent
+set foldmethod=syntax " fold based on ...
 set foldnestmax=10 " deepest fold is 10 levels
 set nofoldenable " don't fold by default
 set foldlevel=1
@@ -1288,12 +1321,16 @@ let g:tagbar_type_css = {
 " UltiSnips
 " Its configuration is now included in current versions of UltiSnips.
 
-" SirVer/ultisnips {{{2
+" 'SirVer/ultisnips' {{{2
 "-----------------------------------------
 " Trigger configuration. Do not use <tab> if you use https://github.com/Valloric/YouCompleteMe.
 let g:UltiSnipsExpandTrigger="**"
 let g:UltiSnipsJumpForwardTrigger="<c-b>"
 let g:UltiSnipsJumpBackwardTrigger="<c-z>"
+" list snippets in insert mode, a way on top of coc integration (coc-ultisnips 
+" lists ultisnips snippets under coc's autocompletion list)
+" let g:UltiSnipsListSnippets="<c-l>"
+" you shouldn't map to `C-;`, as Vim can't reliably recognize that keystroke chord. Check out [the vimhelp FAQ](http://vimhelp.org/vim_faq.txt.html#faq-20.5) for the list of character combos you can use
 
 " aquach/vim-http-client {{{2
 "-----------------------------------------
