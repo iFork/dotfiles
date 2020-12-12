@@ -52,8 +52,11 @@ fi
 
 
 # Read Manuals in vim {{{1
-export MANPAGER="/bin/sh -c \"col -b | vim -c 'set ft=man ts=8 nomod nolist nonu nornu noma' -\""
-# or per vim's :h man: `export MANPAGER="vim -M +MANPAGER -" `
+
+# per vim-utils/vim-man plugin suggestion:
+export MANPAGER="vim -c \"Man $1 $2\" -c 'silent only'"
+
+# export MANPAGER="/bin/sh -c \"col -b | vim -c 'set ft=man ts=8 nomod nolist nonu nornu noma' -\""
 # credit: https://zameermanji.com/blog/2012/12/30/using-vim-as-manpager/
 # col utility to remove extra ^H (backspace) characters because they are not handled correctly by vim
 # ft=man enables the coloring of the man page.
@@ -71,4 +74,5 @@ xmodmap ~/.xmodmap
 # hitting it triggers Escape (after quick release)
 xcape -e 'Control_L=Escape' -t 300
 
+# or per vim's :h man: `export MANPAGER="vim -M +MANPAGER -" `
 
