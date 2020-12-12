@@ -687,20 +687,6 @@ Plug 'andymass/vim-matchup' " Extends vim's % motion
 	"
 	" text objects i% and a%
 
-Plug 'heavenshell/vim-jsdoc', { 
-	\ 'for': ['javascript', 'javascript.jsx','typescript'], 
-	\ 'do': 'make install'
-	\}
-	" Documentation (like Doxygen): generates JSDoc block comments based on a function signature.
-	" link: <https://github.com/heavenshell/vim-jsdoc>
-	" Cheatlist:
-	" :JsDoc 
-		" Move cursor on function keyword line
-		" Type :JsDoc to insert JSDoc
-	" :JsDocFormat
-		" Type :JsDocFormat
-		" Insert JSDoc above the all signatures
-
 Plug 'ternjs/tern_for_vim', { 'do': 'npm install' }
 	"RequiredBy: jsctags (jsctags requres tern in general),
 	" recommended by 'tagbar' and installed for 'tagbar' to use 
