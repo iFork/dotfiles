@@ -1525,6 +1525,25 @@ set secure "restrict usage of some commands in non-default .vimrc files;
 set mouse=a "interact with the tabs by clicking on them. also a + button 
 set history=10000
 
+" Vim as manpager, :h Man
+runtime ftplugin/man.vim
+
+" Keyboard Layout for Armenian, non-English languages
+"
+" out-of-box keymap files are in /usr/share/vim/vim82/keymap/
+" vim looks up for <keymap-name>.vim files in <runtimepath>/keymap subdirs
+" Switch in insert mode: Ctrl-^
+" set keymap=armenian-eastern_utf-8
+" alterantive keymap from ~/.vim/keymap
+set keymap=armenian-phonetic-alt_utf-8
+
+" To disable the keymap at Vim startup so that Insert mode uses Latin
+" characters by default
+set iminsert=0
+set imsearch=0
+" draws the caret with cyan color when layout is changed
+highlight lCursor guifg=NONE guibg=Cyan
+
 " Mappings
 source $VIMHOME/keybindings.vim
 
