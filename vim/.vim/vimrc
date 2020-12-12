@@ -901,6 +901,15 @@ autocmd FileType gitcommit
 
 autocmd FileType git,fugitiveblame,GV
 	\  set nospell
+
+" voomtree window
+autocmd FileType voomtree
+	\ set nospell
+
+" manpager
+autocmd FileType man
+	\ setlocal colorcolumn=0
+
 "-----------------------------------------
 " Filetypes / Compound ft w/ subtypes {{{3
 "-----------------------------------------
@@ -1446,6 +1455,12 @@ let g:http_client_json_ft = "json"
 		" default filetype for json response is javascript
 
 
+" wellle/context  {{{2
+"-----------------------------------------
+
+" disable by default to load on demand
+let g:context_enabled = 0
+
 " 'sjl/gundo.vim'  {{{2
 "-----------------------------------------
 
@@ -1796,7 +1811,7 @@ set linebreak "causes it to not break in the middle of a word,
 " 	gitcommit specific line rules {{{3 
 "-----------------------------------------
 autocmd FileType gitcommit
-	\  set colorcolumn=72
+	\  setlocal colorcolumn=72
 " set textwidth=72
 
 " per tpope: On an 80 column terminal, if we subtract 4 columns for the indent on the left and 4 more for symmetry on the right, we’re left with 72 columns.
@@ -1809,7 +1824,9 @@ autocmd FileType markdown,mkd,pandoc
 "-----------------------------------------
 " Tabulations / Indention Rules {{{2
 "-----------------------------------------
-set smartindent
+" set smartindent " is an old script, should not be used at all.
+set autoindent
+filetype plugin indent on
 
 set shiftround " round indent to a multiple of 'shiftwidth'
 
@@ -1843,8 +1860,10 @@ autocmd Filetype    python
 "-----------------------------------------
 " 	WebDev specific tab / indention  {{{3
 "-----------------------------------------
-autocmd Filetype    html,javascript,css 
+autocmd Filetype    html,javascript,json,css 
                 \   set expandtab      
+				\|	set shiftwidth=2 
+				\|	set softtabstop=2 
 
 "-----------------------------------------
 " Comment Formatting {{{2

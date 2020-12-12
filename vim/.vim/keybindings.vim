@@ -20,6 +20,16 @@
 " Plugin Mappings--- {{{1
 "-----------------------------------------
 
+" Side panels, outline, tagbar {{{2 
+"-----------------------------------------
+augroup VoomVsTagbar
+  autocmd!
+	" ,vim 
+  autocmd FileType markdown,mkd,pandoc,vim,sh
+			  \ nnoremap <buffer> <S-F8> :Voom<cr>
+augroup END
+
+
 "-----------------------------------------
 " NERDTree plugin {{{3
 "-----------------------------------------
@@ -32,6 +42,14 @@ nnoremap <F3> :NERDTreeFind<CR>
 	" with Q which enters ex mode, 
 	" while Konsloe terminal appepts Shift-F2 as such (but my konsole
 	"has problem diplaying bold text. //FIXME later 
+	
+
+"-----------------------------------------
+" Tagbar plugin {{{3
+"-----------------------------------------
+nnoremap <F8> :TagbarToggle<CR>
+nnoremap <S-F8> :TagbarOpen fj<CR> 
+	"focus when opening and jump when open
 	
 "-----------------------------------------
 " undo tree --- {{{3
@@ -74,10 +92,15 @@ function! s:check_back_space() abort
   return !col || getline('.')[col - 1]  =~# '\s'
 endfunction
 
-" Navigate snippet placeholders using tab
-let g:coc_snippet_next = '<Tab>'
-let g:coc_snippet_prev = '<S-Tab>'
+" Navigate snippet placeholders
 
+" let g:coc_snippet_next = '<Tab>'
+" let g:coc_snippet_prev = '<S-Tab>'
+
+" like UltiSnipsJumpForwardTrigger="<c-b>" or
+" UltiSnipsJumpBackwardTrigger="<c-z>"
+let g:coc_snippet_next = '<c-b>'
+let g:coc_snippet_prev = '<c-z>'
 
 " Use <c-space> to trigger completion.
 inoremap <silent><expr> <c-space> coc#refresh()
@@ -339,7 +362,7 @@ command! PlugHelp call fzf#run(fzf#wrap({
 "-----------------------------------------
 
 "move by visual line, not actual line
-autocmd FileType markdown,mkd
+autocmd FileType markdown,mkd,pandoc
 	\ nnoremap j gj
 	\| nnoremap k gk
 
@@ -349,7 +372,7 @@ autocmd FileType markdown,mkd
 
 " Open HTML file in a browser {{{3
 autocmd FileType html
-	\ nmap <F5> :w <Bar> !xdg-open %<CR>
+	\ nmap <buffer> <F5> :w <Bar> !xdg-open %<CR>
 	
 	"TODO: To fix following
 	" \  let open = OpenCommand()
@@ -381,11 +404,19 @@ endfun " }}} }}}
 
 
 "-----------------------------------------
-" My Custom mappings {{{1
+" My Custom Mappings {{{1
 "-----------------------------------------
 
 " show current working directory (cwd)
 nmap <C-g><C-g> :pwd<CR>
+
+"-----------------------------------------
+" My Custom Commands {{{1
+"-----------------------------------------
+
+" CDC = Change to Directory of Current file
+command CDC lcd %:p:h
+ " %:p gives its full path, and %:p:h gives its directory (the "head" of the full path).
 
 "-----------------------------------------
 " Customization Functions {{{1
