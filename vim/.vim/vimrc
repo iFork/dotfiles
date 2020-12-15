@@ -320,7 +320,10 @@ Plug 'SirVer/ultisnips' " Snippets engine
 							" my fork 
 Plug 'iFork/vim-snippets' " my fork of 'honza/vim-snippets' 
 
-Plug 'tpope/vim-surround'  " parentheses, brackets, quotes, XML tags, and more
+" Plug 'tpope/vim-surround'  " parentheses, brackets, quotes, XML tags, and more
+	" Replaced By: 'machakann/vim-sandwich' since it is more extensible and
+	" this one has problems with multi-character surrounds (particularly ``` 
+	" surrounding of codeblocks in markdown).
 	"Cheatlist:
 	"cs<old><new>: change 
 	"ysiw<new>,
@@ -331,6 +334,13 @@ Plug 'tpope/vim-surround'  " parentheses, brackets, quotes, XML tags, and more
 	"Using the f surrounding prompts for a function name.  ysiWfbaz<cr>
 	"in Visual mode: S<p some tag details> 
 	"in insert mode: <C-s><new>
+
+Plug 'machakann/vim-sandwich' " search/select/edit sandwiched textobjects
+	" vim-surround alternative.
+	" Cheatlist: 
+	" i - instant / interactive - ask for buns for each end
+	" I - repeat last instant surround
+
 
 " Plug 'jiangmiao/auto-pairs' " insert or delete brackets, parens, quotes in pair
 	" ISSUE: autocompletion inside an arg object right below 
@@ -1130,9 +1140,9 @@ au WinEnter,BufWinEnter __vial_* let w:airline_disabled=1
 "Check pandoc plugin conflict ?
 "
 "markdown - bold, code block
-autocmd FileType markdown,mkd,pandoc
-	\  let b:surround_{char2nr('8')} = "**\r**"
-	\| let b:surround_{char2nr('c')} = "```\r```"
+" autocmd FileType markdown,mkd,pandoc
+" 	\  let b:surround_{char2nr('8')} = "**\r**"
+" 	\| let b:surround_{char2nr('c')} = "```\r```"
 "see also: https://stackoverflow.com/questions/47400961/surround-visual-text-with-more-than-1-character
 
 
@@ -1140,12 +1150,145 @@ autocmd FileType markdown,mkd,pandoc
 " credit: https://stackoverflow.com/questions/18168540/mapping-surround-vim-plugin-to-add-markdown-link-in-visual-mode
 "TODO: Better put the :map commands into ~/.vim/ftplugin/{filetype}_mappings.vim. (This requires that you have :filetype plugin on.) instead of autocmd.
 " use buffer-local mappings, otherwise once mentioned file type has been entered - mapping stays in effect,
-autocmd FileType markdown,mkd
-	\  nmap <buffer> ysl <Plug>Ysurroundiw]%a(<C-R>*)<Esc>
-	\| vmap <buffer> Sl <Plug>VSurround]%a(<C-R>*)<Esc>
+" autocmd FileType markdown,mkd
+" 	\  nmap <buffer> ysl <Plug>Ysurroundiw]%a(<C-R>*)<Esc>
+" 	\| vmap <buffer> Sl <Plug>VSurround]%a(<C-R>*)<Esc>
 
 	" \  nmap <buffer> <leader>l <Plug>Ysurroundiw]%a(<C-R>*)<Esc>
 	" \| vmap <buffer> <leader>l <Plug>VSurround]%a(<C-R>*)<Esc>
+
+"-----------------------------------------
+" 'machakann/vim-sandwich' {{{2
+"-----------------------------------------
+" Introduce vim-surround keymappings {{{3
+" ys, yss, yS, ds, cs in normal mode and S in visual mode are available.
+" Not in vim-surround, but dss and css are also available, they determine
+" deleted/replaced texts automatically.
+" See the file directly for detail.
+runtime macros/sandwich/keymap/surround.vim
+" That defines g:sandwich#recipes
+"
+" Disable defaults {{{3
+" `macros/sandwich/keymap/surround.vim` already has following disabling flags
+
+" let g:sandwich_no_default_key_mappings = 1
+" let g:operator_sandwich_no_default_key_mappings = 1
+	" [textobj-sandwich query mappings break sentence text objects. · Issue #62 ·
+	" machakann/vim-sandwich]
+	" (https://github.com/machakann/vim-sandwich/issues/62)
+" let g:textobj_sandwich_no_default_key_mappings = 1
+	" (though large parts of the source codes are loaded on the first use of
+	" textobj-sandwich thus it may not reduce startup time so much)
+	" have this disabled when using targets.vim or other textobject providers
+
+"  To disable the highlight feature:
+" [Is is possible to disable the animation/preview/visual highlight of the operation? · Issue #48 · machakann/vim-sandwich](https://github.com/machakann/vim-sandwich/issues/48)
+" operator#sandwich#set('all', 'all', 'highlight', 0)
+
+
+" Textobjects {{{3
+" since `macros/sandwich/keymap/surround.vim` has disabled default textobjects,
+" re-add what is needed.
+" [Introduce vim surround keymappings · machakann/vim-sandwich Wiki]
+" (https://github.com/machakann/vim-sandwich/wiki/Introduce-vim-surround-keymappings#textobjects)
+
+" Textobjects to select a text surrounded by *same* characters user input.
+" xmap im <Plug>(textobj-sandwich-literal-query-i)
+" xmap am <Plug>(textobj-sandwich-literal-query-a)
+" omap im <Plug>(textobj-sandwich-literal-query-i)
+" omap am <Plug>(textobj-sandwich-literal-query-a)
+
+" Recipes {{{3
+" see :h operator-sandwich
+
+" `macros/sandwich/keymap/surround.vim` already defines g:sandwich#recipes
+" let g:sandwich#recipes = deepcopy(g:sandwich#default_recipes)
+"
+" If you want the spaces inside braces with `(` input, add the lines.
+" TODO: check w/ if exists !
+let g:sandwich#recipes += [
+			\   {'buns': ['{ ', ' }'], 'nesting': 1, 'match_syntax': 1,
+			\    'kind': ['add', 'replace'], 'action': ['add'], 'input': ['{']},
+			\
+			\   {'buns': ['[ ', ' ]'], 'nesting': 1, 'match_syntax': 1,
+			\    'kind': ['add', 'replace'], 'action': ['add'], 'input': ['[']},
+			\
+			\   {'buns': ['( ', ' )'], 'nesting': 1, 'match_syntax': 1,
+			\    'kind': ['add', 'replace'], 'action': ['add'], 'input': ['(']},
+			\
+			\   {'buns': ['{\s*', '\s*}'],   'nesting': 1, 'regex': 1,
+			\    'match_syntax': 1, 'kind': ['delete', 'replace', 'textobj'],
+			\    'action': ['delete'], 'input': ['{']},
+			\
+			\   {'buns': ['\[\s*', '\s*\]'], 'nesting': 1, 'regex': 1,
+			\    'match_syntax': 1, 'kind': ['delete', 'replace', 'textobj'],
+			\    'action': ['delete'], 'input': ['[']},
+			\
+			\   {'buns': ['(\s*', '\s*)'],   'nesting': 1, 'regex': 1,
+			\    'match_syntax': 1, 'kind': ['delete', 'replace', 'textobj'],
+			\    'action': ['delete'], 'input': ['(']},
+			\ ]
+
+" Filetype specific recipes {{{4
+" See :h sandwich-filetype-recipes
+" see :h operator-sandwich
+" TODO: move such recipes into ftplugin/{filetype}/sandwich.vim ?,
+" or in ~/.vim/after/ftplugin/{filetype}.vim ?,
+" call helper functions like 'sandwich#markdown#backtick()',
+
+" NOTE: I posted an issue [Some recipe defaults in surround.vim are out of date · Issue #106 · machakann/vim-sandwich](https://github.com/machakann/vim-sandwich/issues/106)
+" > In my case issue was with double-quotes in markdown files. 
+" > I removed `'match_syntax': 1` for it from `macros/sandwich/keymap/surround.vim`
+
+" Credit : [Deleting surroundings does not work when filtering on motionwise · Issue
+" #72 · machakann/vim-sandwich]
+" (https://github.com/machakann/vim-sandwich/issues/72)
+" TODO: Author says now we can just use 'action' filter without 'kind' filter.
+autocmd FileType markdown,mkd,pandoc call sandwich#util#addlocal([
+			\   { 'buns': ['```', '```'],
+			\     'input': ['`'],
+			\     'nesting': 0,
+			\     'motionwise': ['line'],
+			\     'action': ['add'],
+			\     'kind': ['add', 'replace']},
+			\   { 'buns': 'Backtick()',
+			\     'input': ['`'],
+			\     'nesting': 0,
+			\     'listexpr': 1,
+			\     'linewise': 1,
+			\     'action': ['delete'],
+			\     'kind': ['delete', 'replace', 'textobj']},
+			\	{ 'buns': ['**', '**'],
+			\     'input': ['8'],
+			\     'nesting': 0 }
+			\ ])
+
+" Helper functions {{{4
+function! Backtick() abort
+	let n = 0
+
+	while 1
+		let pat = repeat('`', n + 1)
+		let pat_s = '\%(^\|[^`]\)\zs' . pat
+		let pat_e = pat . '\ze\%([^`]\|$\)'
+
+		let [l_s, c_s] = searchpos(pat_s, 'bcnW')
+		let [l_e, c_e] = searchpos(pat_e, 'cnW')
+
+		if !l_s || !l_e
+			return ['', '']
+		endif
+
+		let past_start = getline(l_s)[c_s + n]
+		let before_end = getline(l_e)[c_e - 2]
+
+		if past_start != '`' && before_end != '`'
+			return [pat, pat]
+		endif
+
+		let n += 1
+	endwhile
+endfunction
 
 "-----------------------------------------
 " Markdown--- {{{2
