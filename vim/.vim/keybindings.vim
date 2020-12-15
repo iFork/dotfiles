@@ -428,6 +428,24 @@ imap a <Esc>
 " TODO: use Escape sequence with ttimeout
 " see: [Alt key shortcuts not working on gnome terminal with Vim - Stack Overflow](https://stackoverflow.com/questions/6778961/alt-key-shortcuts-not-working-on-gnome-terminal-with-vim)
 
+" Jumps {{{2
+
+" for jumping  between 'top-level' / outermost blocks / curly braces 
+" TODO: for array of nested objects in JS try 'targets-vim' or see in joplin
+
+" If your '{' or '}' are not in the first column, and you would like to use "[["
+" from fandom, modification of block from :h motion.txt (which used / or ? which 
+" highlights braces with hlsearch).
+map [[ :silent! eval search('{', 'b')<CR>w99[{
+map ][ :silent! eval search('}')<CR>b99]}
+map ]] j0[[%:silent! eval search('{')<CR>
+map [] k$][%:silent! eval search('}', 'b')<CR>
+
+" map [[ ?{<CR>w99[{
+" map ][ /}<CR>b99]}
+" map ]] j0[[%/{<CR>
+" map [] k$][%?}<CR>
+
 "-----------------------------------------
 " My Custom Commands {{{1
 "-----------------------------------------
