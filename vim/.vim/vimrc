@@ -897,8 +897,44 @@ set showmatch " show matching braces
 let python_highlight_all = 1 
 
 "-----------------------------------------
+" File open handlers  {{{2
+"-----------------------------------------
+" To open images or other file links
+" see :h gx
+
+" if g:netrw_browsex_viewer exists, then it will be used to attempt to
+" view files. 
+" (but default seems fine).
+"let g:netrw_browsex_viewer= "xdg-open" 
+" or "gnome-open", "kfmclient exec"
+"
+"-----------------------------------------
+" Non-printable / Invisible Chracters {{{2
+"-----------------------------------------
+"list command config to display non-printable chracters
+":set list 
+set listchars=tab:␉·	"that's Unicode character U+2409 SYMBOL FOR HORIZONTAL TABULATION 
+			"followed by U+00B7 MIDDLE DOT
+set listchars+=eol:⏎
+set listchars+=trail:␠
+set listchars+=nbsp:⎵ " for non-breaking space
+set listchars+=space:␣ " for space
+
+"-----------------------------------------
+" Code folding settings {{{2
+"-----------------------------------------
+set foldmethod=syntax " fold based on ...
+set foldnestmax=10 " deepest fold is 10 levels
+set nofoldenable " don't fold by default
+set foldlevel=1
+
+"########################################
 " Filetype Specific {{{2
 "-----------------------------------------
+
+" dotfiles
+autocmd FileType vim,sh,readline,conf,xmodmap
+	\ setlocal foldmethod=marker
 
 "Quickfix and location list window
 autocmd FileType qf
@@ -948,38 +984,6 @@ augroup END
 
 
 "-----------------------------------------
-" File open handlers  {{{2
-"-----------------------------------------
-" To open images or other file links
-" see :h gx
-
-" if g:netrw_browsex_viewer exists, then it will be used to attempt to
-" view files. 
-" (but default seems fine).
-"let g:netrw_browsex_viewer= "xdg-open" 
-" or "gnome-open", "kfmclient exec"
-"
-"-----------------------------------------
-" Non-printable / Invisible Chracters {{{2
-"-----------------------------------------
-"list command config to display non-printable chracters
-":set list 
-set listchars=tab:␉·	"that's Unicode character U+2409 SYMBOL FOR HORIZONTAL TABULATION 
-			"followed by U+00B7 MIDDLE DOT
-set listchars+=eol:⏎
-set listchars+=trail:␠
-set listchars+=nbsp:⎵ " for non-breaking space
-set listchars+=space:␣ " for space
-
-"-----------------------------------------
-" Code folding settings {{{2
-"-----------------------------------------
-set foldmethod=syntax " fold based on ...
-set foldnestmax=10 " deepest fold is 10 levels
-set nofoldenable " don't fold by default
-set foldlevel=1
-
-"########################################
 " Plugin Configs {{{1
 "########################################
 "-----------------------------------------
