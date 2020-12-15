@@ -446,6 +446,25 @@ map [] k$][%:silent! eval search('}', 'b')<CR>
 " map ]] j0[[%/{<CR>
 " map [] k$][%?}<CR>
 
+" Windows {{{2
+" augment default <c-w>z which is :pclose - to close preview window
+" Details
+	" close vial output window. BTW	its `buftype=nofile` and is  not listed,
+	" i.e. `nobuflisted` (so can do :bwipeout but not :bdelete)
+		" \ :bdelete __vial_http_hdr__ __vial_http_req__
+	" TODO: MayBe add closing of all tempo (buftype=nofile) buffers? 
+	" Notes
+	" :help special-buffers, :help 'buftype'
+	" `echo bufname('')` to get buffer name of `nobuflisted` buffer
+nnoremap <C-w>z 
+		\ :pclose<CR>
+		\ :cclose<CR>
+		\ :lclose<CR>
+		\ :silent! bwipeout __vial_http__<CR>
+		\ :echo "[p\|c\|l]close, bw vial"<CR>
+
+nnoremap <C-w>Z :copen<CR>
+
 "-----------------------------------------
 " My Custom Commands {{{1
 "-----------------------------------------
