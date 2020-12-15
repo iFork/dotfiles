@@ -410,6 +410,24 @@ endfun " }}} }}}
 " show current working directory (cwd)
 nmap <C-g><C-g> :pwd<CR>
 
+" Alt (M, meta) key fix {{{2
+
+" TODO: testing
+" TEST: meta / alt key
+" imap <M-a> <Esc>
+	" not working
+
+" using control character - typed by pressing <Ctrl-v> <Alt-
+" Cons: 
+" - this case needs to remap all <M-..> maps to one with this control charecter
+" - yank and put in Vim when you want to copy it elsewhere. If you
+" just copy the mapping in an editor like gedit, the mapping will probably be
+" broken.
+imap a <Esc>
+
+" TODO: use Escape sequence with ttimeout
+" see: [Alt key shortcuts not working on gnome terminal with Vim - Stack Overflow](https://stackoverflow.com/questions/6778961/alt-key-shortcuts-not-working-on-gnome-terminal-with-vim)
+
 "-----------------------------------------
 " My Custom Commands {{{1
 "-----------------------------------------
