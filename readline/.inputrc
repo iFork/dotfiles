@@ -1,6 +1,29 @@
 # configuration of GNU Readline
 
+# Reloading / sourcing:
+# Press C-x, C-r to reload the settings.
+# or `bind -f ~/.inputrc`
+
+$include /etc/inputrc
+# various standard keybindings for common terminals. (Usually they get loaded automatically, but if you have an ~/.inputrc of your own, you need to load the system-wide one manually.) 
 
 Space: magic-space
 	# e.g. when you type space after !:2, it will be immediately expanded to its value
 	
+# Autocomplete symlinked dirs {{{1
+# Autocomplete directory symlink to whole directory, including slash, allowing nested files autocompletion
+#
+# [Bash autocomplete on symlink to directory complete to whole directory, including slash - Super User](https://superuser.com/questions/271626/bash-autocomplete-on-symlink-to-directory-complete-to-whole-directory-including)
+# [command line - How to make tab completion append slash for directory symlinks? - Ask Ubuntu](https://askubuntu.com/questions/900923/how-to-make-tab-completion-append-slash-for-directory-symlinks)
+#
+# FIXME: Following does not fix what i wanted !
+# Tried: log-out/log-in, disable 'magic-space' above 
+# NOTE: Problem may be elsewhere, `cd <symlink>` also does not work
+set mark-symlinked-directories on
+
+
+# Alternatively, you can also add this line to your `~/.bashrc`:
+
+# ```
+# bind 'set mark-symlinked-directories on'
+# ```
