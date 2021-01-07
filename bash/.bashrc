@@ -236,3 +236,35 @@ elif type compctl &>/dev/null; then
 fi
 ##-end-npm-completion-###
 
+# vim {{{1
+
+# Note on non-interactive shells {{{2
+
+# NOTE: VIM and .bashrc aliases or functions
+# when you run `!<cmd>` in vim or `/bin/bash -c <cmd>` from another shell you are
+# launching an instance of bash in non-interactive mode. In non-interactive mode
+# alias are not expanded and you get this error.
+# [external command - Bash not recognizing aliases when run from Vim - Vi and Vim Stack Exchange](https://vi.stackexchange.com/questions/2950/bash-not-recognizing-aliases-when-run-from-vim)
+
+# `~/.bash_profile` and `~/.bashrc` are not read by scripts, and functions are
+# not exported by default. To do so, you can use **`export -f <myFuncName>`** 
+# [How to define a Bash function that can be used by different scripts - Unix & Linux Stack Exchange](https://unix.stackexchange.com/questions/63665/how-to-define-a-bash-function-that-can-be-used-by-different-scripts)
+
+# Limitation observed: exporting ag() for non-interactive shells - does not affect
+# :Ag in vim 
+
+# for more rigorous solution see also https://unix.stackexchange.com/a/148748/429305
+
+# Search/ find/ grep {{{1
+
+# Ag search {{{2
+
+# Fixes issue: [.gitignore not taken into account when the current working directory is a subdirectory · Issue #144 · ggreer/the_silver_searcher](https://github.com/ggreer/the_silver_searcher/issues/144)
+ag() {
+  command ag \
+    -p "$(git rev-parse --is-inside-work-tree &>/dev/null && echo "$(git rev-parse --show-toplevel)/.gitignore")" \
+    "$@"
+}
+# exporting for non-interactive shells - does not affect :Ag in vim
+# export -f ag
+
