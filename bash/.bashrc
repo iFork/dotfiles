@@ -334,3 +334,10 @@ source /usr/share/doc/fzf/examples/completion.bash
 
 # On bash, fuzzy completion is enabled only for a predefined set of commands (`complete | grep _fzf` to see the list). But you can enable it for other commands as well by using `_fzf_setup_completion` helper function.
 
+
+# Z (smart cd) {{{2
+# jump to dir by partial paths and 'frecency' (frequency and recency)
+# (https://github.com/rupa/z)
+# initialize z
+source /home/mher/bin/z.sh 
+
