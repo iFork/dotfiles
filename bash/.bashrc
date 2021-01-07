@@ -2,6 +2,8 @@
 # see /usr/share/doc/bash/examples/startup-files (in the package bash-doc)
 # for examples
 
+# Basic {{{1
+
 # If not running interactively, don't do anything
 case $- in
     *i*) ;;
@@ -116,11 +118,14 @@ if ! shopt -oq posix; then
   fi
 fi
 
-# Mher, custom alias
-alias hls='cd ~ && ls -lh'
-
+# Basic customization {{{1
 
 export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
+
+# custom alias {{{1
+alias hls='cd ~ && ls -lh'
+
+# Terminal {{{1
 
 #VTE (Virtual Terminal Emulator) Configuration for Tilix terminal
 if [ $TILIX_ID ] || [ $VTE_VERSION ]; then
