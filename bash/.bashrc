@@ -268,3 +268,69 @@ ag() {
 # exporting for non-interactive shells - does not affect :Ag in vim
 # export -f ag
 
+
+#
+# FZF config {{{2
+
+# To respect .gitignore:
+
+# Setting fd as the default source for fzf
+export FZF_DEFAULT_COMMAND='fdfind --type f --hidden --follow --exclude .git'
+
+# To apply the command to CTRL-T as well
+export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+
+# If you want the command to follow symbolic links, and don't want it to
+# exclude hidden files, use the following command:
+# export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --exclude .git'
+
+# If you don't want this configuration outside Vim for some reason, you can
+# even define it in your Vim configuration file like so:
+# `let $FZF_DEFAULT_COMMAND = '...'`
+
+# Consult [sharkdp/fd: A simple, fast and user-friendly alternative to 'find'](https://github.com/sharkdp/fd#excluding-specific-files-or-directories) 
+# for more ignore / exclusions
+
+# Keybindings and completion {{{3
+
+# see: https://github.com/junegunn/fzf#key-bindings-for-command-line
+# ALT-C - cd into the selected directory
+    # Set FZF_ALT_C_COMMAND to override the default command
+    # Set FZF_ALT_C_OPTS to pass additional options
+# by default, Alt-C does not honor .gitignore and does not use FZF_DEFAULT_COMMAND 
+# as it needs to list only directories, not files
+# use directory listing tool that already knows how to process .gitignore.
+# `blsd` is one such example, and one can easily come up with a script doing that
+# based on ag or rg (e.g. https://github.com/junegunn/agl).
+
+# export FZF_ALT_C_COMMAND='ag --hidden --ignore .git -g ""'
+# export FZF_ALT_C_COMMAND='blsd'
+export FZF_ALT_C_COMMAND='fdfind -t d'
+
+
+# to find examples do : `dpkg -L fzf | grep bindings`
+
+source /usr/share/doc/fzf/examples/key-bindings.bash 
+	# c-t, c-r, alt-c
+
+# Overrifing functions in sourced script below:
+
+# Use fd (https://github.com/sharkdp/fd) instead of the default find
+# command for listing path candidates.
+# - The first argument to the function ($1) is the base path to start traversal
+# - See the source code (completion.{bash,zsh}) for the details.
+_fzf_compgen_path() {
+  fdfind --hidden --follow --exclude ".git" . "$1"
+}
+
+# Use fd to generate the list for directory completion
+_fzf_compgen_dir() {
+  fdfind --type d --hidden --follow --exclude ".git" . "$1"
+}
+
+
+source /usr/share/doc/fzf/examples/completion.bash 
+	# **<tab> for some commands, kill <tab>, ssh/.. , export .. 
+
+# On bash, fuzzy completion is enabled only for a predefined set of commands (`complete | grep _fzf` to see the list). But you can enable it for other commands as well by using `_fzf_setup_completion` helper function.
+
