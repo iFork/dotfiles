@@ -460,8 +460,9 @@ nnoremap <C-w>z
 		\ :pclose<CR>
 		\ :cclose<CR>
 		\ :lclose<CR>
+		\ :helpclose<CR>
 		\ :silent! bwipeout __vial_http__<CR>
-		\ :echo "[p\|c\|l]close, bw vial"<CR>
+		\ :echo "[p\|c\|l\|help]close, bw vial"<CR>
 
 nnoremap <C-w>Z :copen<CR>
 
