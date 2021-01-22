@@ -191,6 +191,23 @@ Plug 'wakatime/vim-wakatime' "Time tracker, Productivity monitoring
 
 " git ----- {{{3
 Plug 'tpope/vim-fugitive' "git wrapper
+	" Cheatlist:
+	" See: http://vimcasts.org/episodes/fugitive-vim-browsing-the-git-object-database/
+	" :Gedit on a fugitive file will open its working-tree version.
+	" :Gedit branchname:path/to/file. tab key to auto-complete
+	" e.g. :Gedit feature:%.
+	" :Gbrowse - open webpage for any git object
+	" on Tree:
+	" a - on tree object, toggle between the `git show` and `git ls-tree` views
+	" `-` or :e %:h - open parent tree of current tree in buffer.
+	" C - jump up to the commit object for the current tree, whenever current
+	" buffer contains a git tree or blob
+
+Plug 'tpope/vim-rhubarb' " GitHub extension for vim-fugitive
+	" enables :GBrowse
+	" omni-complete (`<C-X><C-O>`) GitHub issues, issue URLs, and
+	" collaborators in commit messages, see `:help compl-omni`
+
 Plug 'airblade/vim-gitgutter' " sign column for git diffs
 	" Cheatlist: :GitGutterEnable
 	" Hunks
@@ -1504,6 +1521,11 @@ let g:NERDTreeGitStatusIndicatorMapCustom = {
 
 
 "-----------------------------------------
+" 'tpope/vim-fugitive' --- {{{2
+"-----------------------------------------
+" Auto-clean fugitive buffers
+autocmd BufReadPost fugitive://* set bufhidden=delete
+
 " nerdcommenter  {{{2
 "-----------------------------------------
 "Cheatlist: if <leader> == \
