@@ -506,6 +506,12 @@ Plug 'vim-utils/vim-man'  " View and grep man pages
 	" If you have vanilla vim the command will *block* and make vim unusable
 	" until done (and it can take a while).
 	" Installing vim-dispatch is recommended.
+	" ISSUE:
+	" If you were previously using `man.vim` that comes with vim by default, 
+	" remove this line `runtime! ftplugin/man.vim` from your `.vimrc`. It's
+	" known to be causing
+	" [issues](https://github.com/vim-utils/vim-man/issues/23) with this
+	" plugin.
 
 " Markdown ----- {{{3
 " ---------------------
@@ -1841,7 +1847,11 @@ set mouse=a "interact with the tabs by clicking on them. also a + button
 set history=10000
 
 " Vim as manpager, :h Man
-runtime ftplugin/man.vim
+" runtime ftplugin/man.vim
+" ISSUE: conflicts w/ plugin 'vim-utils/vim-man': always buftype=nofile
+" [Buftype is somehow always set nofile · Issue #23 · vim-utils/vim-man · GitHub](https://github.com/vim-utils/vim-man/issues/23)
+" > The problem is: both `man.vim` and  'vim-utils/vim-man' plugin are loaded.
+" > Solution: remove `runtime! ftplugin/man.vim` from your `vimrc`
 
 " Keyboard Layout for Armenian, non-English languages
 "
