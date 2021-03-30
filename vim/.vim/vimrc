@@ -337,6 +337,12 @@ Plug 'SirVer/ultisnips' " Snippets engine
 							" my fork 
 Plug 'iFork/vim-snippets' " my fork of 'honza/vim-snippets' 
 
+Plug 'adriaanzon/vim-emmet-ultisnips' " Emmet implemented with UltiSnips 
+	" simpler than 'jceb/emmet.snippets'
+	" no `$` syntax support (no autonumbers)
+	" no default attribute support
+	" Usage: `aside.sidebar#Id>p+div*2`, exapnd w/ `**`
+
 " Plug 'tpope/vim-surround'  " parentheses, brackets, quotes, XML tags, and more
 	" Replaced By: 'machakann/vim-sandwich' since it is more extensible and
 	" this one has problems with multi-character surrounds (particularly ``` 
@@ -1765,13 +1771,13 @@ let g:coc_global_extensions = ['coc-json'
 				\, 'coc-lists' 
 				\, 'coc-tsserver'
 				\, 'coc-css'
+				\, 'coc-html'
 				\, 'coc-ultisnips'
 				\, 'coc-eslint'
 				\, 'coc-jest'
 				\ ]
 				" \, 'coc-prettier'
-				" \, 'coc-html'
-				" \, 'coc-ultisnips', 'coc-emmet'
+				" \, 'coc-emmet'
 				" \, 'coc-react-refactor'
 				" https://www.npmjs.com/package/coc-react-refactor
 				" \, 'coc-yank'
