@@ -1782,9 +1782,9 @@ let g:coc_global_extensions = ['coc-json'
 				" https://www.npmjs.com/package/coc-react-refactor
 				" \, 'coc-yank'
 
-" Coc Extension Notes
-
-		" coc-tsserver: 
+" Coc Extension Notes {{{4
+"-----------------------------------------
+		" coc-tsserver: {{{5
 		" for javascript project, configure jsconfig.json to make tsserver understand your code.
 
 		" TODO: configure tsserver linting/style rules to not duplicate that
@@ -1796,7 +1796,7 @@ let g:coc_global_extensions = ['coc-json'
 		" prefix with '_'). So **tsserver** fares better than eslint in this
 		" respect. 
 
-		" 'coc-eslint' 
+		" 'coc-eslint' {{{5
 		" " Dependency: npx eslint, local or global
 		" (for global may need `eslint.nodePath` setting), also
 		" related/peer plugins may be picky about that.
@@ -1810,7 +1810,7 @@ let g:coc_global_extensions = ['coc-json'
 		" Past Resolved Issues: 
 		" reported [CodeAction not found. Cannot read property 'range' of undefined · Issue #69 · neoclide/coc-eslint](https://github.com/neoclide/coc-eslint/issues/69)
 
-		" coc-ultisnips
+		" coc-ultisnips {{{5
 		" link: https://github.com/neoclide/coc-sources
 		" Completion for items from ultisnips
 		" Important: this source could be block and not work when ultisnips plugin not loaded in vim.
@@ -1818,7 +1818,7 @@ let g:coc_global_extensions = ['coc-json'
 		" A: It won't work when your ultisnips or neosnippet plugin not loaded. For better experience, consider use coc-snippets instead.
 		" Config options: https://github.com/neoclide/coc-sources#configure
 
-		" coc-snippets
+		" coc-snippets {{{5
 		"snippets.ultisnips.directories: directories that searched for snippet files, could be subfolder in every $runtimepath or absolute paths, default: ["UltiSnips"]
 		" Q: Where to get snippets?
 		" A: One solution is install honza/vim-snippets which is widely used.
@@ -1828,9 +1828,8 @@ let g:coc_global_extensions = ['coc-json'
 		"
 		" can add settings: snippets.ultisnips.directories: [ "UltiSnips", "gosnippets/UltiSnips" ], to load it.
 		
-		" coc-jest
+		" coc-jest {{{5
 		" ( close to, more specialized than 'vim-test/vim-test' plugin)
-
 
 " Note: To install extensions with shell script, use command like:
 " install coc-json & coc-html and exit
