@@ -53,8 +53,11 @@ fi
 
 # Read Manuals in vim {{{1
 
+# TODO: move custom man to bashrc from .profile ? for emergency man access w/o
+# vim complication ?
+# FIXME, this is not actually per vim-man recommendations:
 # per vim-utils/vim-man plugin suggestion:
-export MANPAGER="vim -c \"Man $1 $2\" -c 'silent only'"
+# export MANPAGER="vim -c \"Man $1 $2\" -c 'silent only'"
 
 # export MANPAGER="/bin/sh -c \"col -b | vim -c 'set ft=man ts=8 nomod nolist nonu nornu noma' -\""
 # credit: https://zameermanji.com/blog/2012/12/30/using-vim-as-manpager/
