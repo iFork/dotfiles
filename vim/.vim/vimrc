@@ -337,11 +337,16 @@ Plug 'SirVer/ultisnips' " Snippets engine
 							" my fork 
 Plug 'iFork/vim-snippets' " my fork of 'honza/vim-snippets' 
 
-Plug 'adriaanzon/vim-emmet-ultisnips' " Emmet implemented with UltiSnips 
+" Plug 'adriaanzon/vim-emmet-ultisnips' " Emmet implemented with UltiSnips 
 	" simpler than 'jceb/emmet.snippets'
-	" no `$` syntax support (no autonumbers)
 	" no default attribute support
-	" Usage: `aside.sidebar#Id>p+div*2`, exapnd w/ `**`
+	" Usage: `aside.sidebar#Id>p+div*2`, exapnd w/ ultisnip's trigger (`**`)
+	" Limitations: Does not support autonumbering `$`, grouping `()` and
+	" climb up `^` syntax. 
+	" Alternative: 'jceb/emmet.snippets' supports `^`, `$`, default
+	" attributes
+
+Plug 'jceb/emmet.snippets' " Emmet implemented with UltiSnips 
 
 " Plug 'tpope/vim-surround'  " parentheses, brackets, quotes, XML tags, and more
 	" Replaced By: 'machakann/vim-sandwich' since it is more extensible and
@@ -1629,6 +1634,12 @@ let g:UltiSnipsJumpBackwardTrigger="<c-z>"
 " lists ultisnips snippets under coc's autocompletion list)
 " let g:UltiSnipsListSnippets="<c-l>"
 " you shouldn't map to `C-;`, as Vim can't reliably recognize that keystroke chord. Check out [the vimhelp FAQ](http://vimhelp.org/vim_faq.txt.html#faq-20.5) for the list of character combos you can use
+
+" jceb/emmet.snippets {{{2
+
+" let g:emmet_html_default_attributes_extension = {
+" 	\ 'a': {'href': '', 'id': 'ID'},
+" 	\ }
 
 " aquach/vim-http-client {{{2
 "-----------------------------------------
