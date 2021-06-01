@@ -234,10 +234,35 @@ Plug 'junegunn/gv.vim' " git commit browser
 
 " Language semantics ----- {{{3
 
+" TODO: Explore .ctags config of -romainl
+" > I've been maintaining an extensive .ctags for "modern" JavaScript for a
+" > while, that works a hell of a lot better than Exuberant Ctags' default parser
+" > and, to some extent, better than Universal Ctags' new parser. It's worth a
+" > try if you are doing JavaScript and Ctags.
+
+Plug 'ludovicchabant/vim-gutentags' " manage tag files / ctag
+	" runs ctag processes to keep tag files up to date.
+
 Plug 'majutsushi/tagbar' "sidebar that displays the ctags-generated 
-			"tags of the current file, ordered by their scop
-			"Dependency: ctags. recommended is universal-ctags.
+			" tags of the current file, ordered by their scope
+			" Updates tags on the fly on its own (no need for tag files)
+			" Dependency: ctags. recommended is universal-ctags.
 			" https://github.com/universal-ctags/ctags/blob/master/docs/autotools.rst 
+
+			" Note: if you have jsctags in your PATH, that
+			" will automatically load a different configuration. That
+			" behaviour is there so that people don't have to explicitly
+			" configure jsctags after installing it
+			" https://github.com/preservim/tagbar/issues/443#issuecomment-331046681
+
+Plug 'ternjs/tern_for_vim', { 'do': 'npm install' }
+	"RequiredBy: jsctags (jsctags requres tern in general),
+	" recommended by 'tagbar' and installed for 'tagbar' to use 
+	" 'jsctags'
+	" link: https://github.com/majutsushi/tagbar/wiki#javascript
+	" Check Alternative: check if instead 'tern_for_vim' we can install
+	" 'tern' on our machine. In that case 'tagbar' maybe will not show
+	" improved JS tags without additional configuration.
 
 "Intellisense engine like VSCode, Language Server Protocol - Client
 Plug 'neoclide/coc.nvim', {'do': function('Coc_plugin_setup'), 'branch': 'release' } 
@@ -337,7 +362,7 @@ Plug 'SirVer/ultisnips' " Snippets engine
 							" my fork 
 Plug 'iFork/vim-snippets' " my fork of 'honza/vim-snippets' 
 
-Plug 'adriaanzon/vim-emmet-ultisnips' " Emmet implemented with UltiSnips 
+" Plug 'adriaanzon/vim-emmet-ultisnips' " Emmet implemented with UltiSnips 
 	" simpler than 'jceb/emmet.snippets'
 	" no default attribute support
 	" Usage: `aside.sidebar#Id>p+div*2`, exapnd w/ ultisnip's trigger (`**`)
@@ -346,12 +371,29 @@ Plug 'adriaanzon/vim-emmet-ultisnips' " Emmet implemented with UltiSnips
 	" Alternative: 'jceb/emmet.snippets' supports `^`, `$`, default
 	" attributes
 
-Plug 'jceb/emmet.snippets' " Emmet implemented with UltiSnips 
-	" Issue:
+" Plug 'jceb/emmet.snippets' " Emmet implemented with UltiSnips 
+	" Alternative: 'adriaanzon/vim-emmet-ultisnips' 
+	" Issue1:
 	" Default attribute mangling like b'attr'="" 
 	" Default attributes somehow upon expansion become prefixed with `b` and
 	" single-quoted, e.g. img becomes `<img b'src'="" b'alt'=""></img>`.
 	" https://github.com/jceb/emmet.snippets/issues/2
+	" Issue2:
+	" Now this does not work, i.e. no chained expansion (i.e. span>a).
+	" Only the last element of the chain expands upon `**` trigger (same as
+	" w/o the plugin, just ordinary Ultisnips).
+	" Possible reason - interference from other (emmet) plugins? But at the
+	" moment only this one is UltiSnips' (and triggered by `**`).
+	" Can mattn/emmet-vim or coc-emmet interfere w/ this?
+
+Plug 'mattn/emmet-vim' " Emmet, accompany w/ coc-emmet
+	" Cheatlist:
+	" tigger - `<c-y>,`
+
+	" Note: 'nativ' vs coc-emmet trigger:
+	" Completion result may change depending on envoking trigger. E.g.
+	" `lorem5<c-y>,` produces random text while `lorem5<tab><cr>` (of coc-emmet)
+	" produces same	expected text, like with Ultisnip's `**` trigger.
 
 " Plug 'tpope/vim-surround'  " parentheses, brackets, quotes, XML tags, and more
 	" Replaced By: 'machakann/vim-sandwich' since it is more extensible and
@@ -735,15 +777,6 @@ Plug 'andymass/vim-matchup' " Extends vim's % motion
 	" Unlike ]%, % is an inclusive motion.
 	"
 	" text objects i% and a%
-
-Plug 'ternjs/tern_for_vim', { 'do': 'npm install' }
-	"RequiredBy: jsctags (jsctags requres tern in general),
-	" recommended by 'tagbar' and installed for 'tagbar' to use 
-	" 'jsctags'
-	" link: https://github.com/majutsushi/tagbar/wiki#javascript
-	" Check Alternative: check if instead 'tern_for_vim' we can install
-	" 'tern' on our machine. In that case 'tagbar' maybe will not show
-	" improved JS tags without additional configuration.
 
 Plug 'baverman/vial' " python fw for plugins
 	" RequiredBy: vial-http,
@@ -1626,11 +1659,11 @@ let g:tagbar_type_css = {
     \ ]
 \ }
 
+" 'SirVer/ultisnips' {{{2
+"-----------------------------------------
 " UltiSnips
 " Its configuration is now included in current versions of UltiSnips.
 
-" 'SirVer/ultisnips' {{{2
-"-----------------------------------------
 " Trigger configuration. Do not use <tab> if you use https://github.com/Valloric/YouCompleteMe.
 let g:UltiSnipsExpandTrigger="**"
 let g:UltiSnipsJumpForwardTrigger="<c-b>"
@@ -1782,6 +1815,8 @@ set statusline^=%{coc#status()}%{get(b:,'coc_current_function','')}
 " NOTE: Checking Completion source codes (e.g. [A], [B], etc):
 " Use command :CocList sources to get current completion source list.
 
+" Unistalling: delete from the list below and run :CocUnistall <Extension-name>
+
 "make coc automatically install these extensions
 let g:coc_global_extensions = ['coc-json'
 				\, 'coc-clangd' 
@@ -1790,11 +1825,11 @@ let g:coc_global_extensions = ['coc-json'
 				\, 'coc-css'
 				\, 'coc-html'
 				\, 'coc-ultisnips'
+				\, 'coc-emmet'
 				\, 'coc-eslint'
 				\, 'coc-jest'
 				\ ]
 				" \, 'coc-prettier'
-				" \, 'coc-emmet'
 				" \, 'coc-react-refactor'
 				" https://www.npmjs.com/package/coc-react-refactor
 				" \, 'coc-yank'
