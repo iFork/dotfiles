@@ -1,0 +1,7 @@
+#! /bin/sh
+
+# Read Manuals in vim
+# using vim-utils/vim-man plugin
+# https://github.com/vim-utils/vim-man
+vim -c "Man $1 $2" -c 'silent only'
+

@@ -1538,8 +1538,10 @@ let g:session_command_aliases = 1
 
 " open a NERDTree automatically when vim starts up if 
 " no files and session (via -S) were specified
+" and vim has not started as a manpager
 autocmd StdinReadPre * let s:std_in=1
 autocmd VimEnter * if argc() == 0 && !exists("s:std_in") 
+		\ && &filetype !=# 'man'
 		\ && v:this_session == "" | NERDTree | endif
 "open NERDTree automatically when vim starts up on opening a directory
 autocmd VimEnter * if argc() == 1 && isdirectory(argv()[0]) 

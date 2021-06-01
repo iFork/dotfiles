@@ -124,6 +124,7 @@ export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
 
 # custom alias {{{1
 alias hls='cd ~ && ls -lh'
+alias man=vman
 
 # Terminal {{{1
 
@@ -254,6 +255,28 @@ fi
 # :Ag in vim 
 
 # for more rigorous solution see also https://unix.stackexchange.com/a/148748/429305
+
+# Read Manuals in vim {{{2
+
+# NOTE: hadled by a vinman script in ~/bin dir 
+# per vim-utils/vim-man plugin suggestion.
+
+# Alternatives *poorly* fitting 'vim-utils/vim-man' plugin {{{3
+
+# export MANPAGER="vim -c \"Man $1 $2\" -c 'silent only'"
+
+# export MANPAGER="/bin/sh -c \"col -b | vim -c 'set ft=man ts=8 nomod nolist nonu nornu noma' -\""
+# credit: https://zameermanji.com/blog/2012/12/30/using-vim-as-manpager/
+# col utility to remove extra ^H (backspace) characters because they are not handled correctly by vim
+# ft=man enables the coloring of the man page.
+# ts=8 ensures the width of tab characters matches less.
+# nomod removes the modification warning when trying to quit.
+# nonu removes line numbers.
+# nolist disables listchars so trailing whitespace and extra tabs are not highlighted.
+# noma sets the buffer to not be modifiable.
+
+# or per vim's :h man: `export MANPAGER="vim -M +MANPAGER -" `
+
 
 # Search/ find/ grep {{{1
 

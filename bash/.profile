@@ -50,24 +50,9 @@ if [ "$DESKTOP_ENV" = "x11" ]; then
 fi
 
 
+# Automatic ammendments by external tools {{{1
 
-# Read Manuals in vim {{{1
-
-# TODO: move custom man to bashrc from .profile ? for emergency man access w/o
-# vim complication ?
-# FIXME, this is not actually per vim-man recommendations:
-# per vim-utils/vim-man plugin suggestion:
-# export MANPAGER="vim -c \"Man $1 $2\" -c 'silent only'"
-
-# export MANPAGER="/bin/sh -c \"col -b | vim -c 'set ft=man ts=8 nomod nolist nonu nornu noma' -\""
-# credit: https://zameermanji.com/blog/2012/12/30/using-vim-as-manpager/
-# col utility to remove extra ^H (backspace) characters because they are not handled correctly by vim
-# ft=man enables the coloring of the man page.
-# ts=8 ensures the width of tab characters matches less.
-# nomod removes the modification warning when trying to quit.
-# nonu removes line numbers.
-# nolist disables listchars so trailing whitespace and extra tabs are not highlighted.
-# noma sets the buffer to not be modifiable.
-
-# or per vim's :h man: `export MANPAGER="vim -M +MANPAGER -" `
+# Appended by ubuntu-make installateion
+# Ubuntu make installation of Ubuntu Make binary symlink
+PATH=/home/mher/.local/share/umake/bin:$PATH
 
