@@ -603,7 +603,8 @@ Plug 'vim-utils/vim-man'  " View and grep man pages
 	"Issue: Links with a dot in their display name (ie. URL) breaks syntax highlighting for the rest of the file
 	"https://github.com/plasticboy/vim-markdown/issues/419
 
-Plug 'VVVFO/vim-markdown' "fork of plasticboy/vim-markdown with #104 and #419 fixed
+" TODO: FIXME: repo has gone from github. Replace with an alternative.
+" Plug 'VVVFO/vim-markdown' "fork of plasticboy/vim-markdown with #104 and #419 fixed
 	"Issue: does not format/conceal  emphasis `*a*`.
 	"TODO: Report issue ? 
 
