@@ -1,11 +1,22 @@
+#!/usr/bin/env bash
+
 # xcape 
-# [alols/xcape: Linux utility to configure modifier keys to act as other keys when pressed and released on their own.](https://github.com/alols/xcape)
+
 
 # Install {{{1
 
 if [ ! -x "$(command -v xcape)" ]; then
-    echo 'Installing xcape'
-	sudo apt install xcape -y
+	echo 'Installing xcape'
+	DISTRO=$(awk '/^ID=/' /etc/*-release | awk -F'=' '{ print tolower($2) }')
+	echo "on Linux distro: $DISTRO"
+	# in Ubuntu
+	if [[ "$DISTRO" == "ubuntu"* ]]; then
+		sudo apt install xcape -y
+	elif [[ "$DISTRO" == "manjaro"* ]]; then
+		sudo pacman -S xcape
+	else
+		echo "distro's install command is unknown"
+	fi
 fi
 
 
